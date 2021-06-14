@@ -1,5 +1,5 @@
 {
-  "name": "@hmscore/cordova-plugin-hms-location",
+  "name": "@triggi/cordova-plugin-hms-location",
   "description": "Cordova HMS Location Plugin",
   "version": "5.1.0-303",
   "main": "./www/index.js",
