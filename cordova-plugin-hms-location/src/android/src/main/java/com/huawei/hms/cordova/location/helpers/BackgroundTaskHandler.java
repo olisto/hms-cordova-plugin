@@ -50,7 +50,8 @@ public class BackgroundTaskHandler {
     private String prepareBackgroundFunction(String functionName) {
         String preFunction = fetchFunctionFromStorage(functionName);
         if (preFunction == null) return null;
-        preFunction = preFunction.replace("=>", "");
+        preFunction = preFunction.replaceFirst("=>", "");
+        preFunction = preFunction.replaceFirst("function", "");
         String function = String.format(Locale.ENGLISH, "function callback%s", preFunction);
         if (function.contains("ionic") || function.contains("__WEBPACK_") || function.contains("IMPORTED") || function.contains("MODULE"))
             function = cleanIonicPrefixes(function);
