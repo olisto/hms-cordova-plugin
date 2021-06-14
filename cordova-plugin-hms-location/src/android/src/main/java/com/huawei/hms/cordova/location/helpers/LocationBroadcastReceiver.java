@@ -32,6 +32,7 @@ import com.huawei.hms.location.GeofenceErrorCodes;
 import com.huawei.hms.location.LocationResult;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -115,11 +116,21 @@ public class LocationBroadcastReceiver extends BroadcastReceiver {
         if (triggerType == Geofence.ENTER_GEOFENCE_CONVERSION || triggerType == Geofence.EXIT_GEOFENCE_CONVERSION || triggerType == Geofence.DWELL_GEOFENCE_CONVERSION) {
             List<Geofence> triggeringGeofences = geofenceData.getConvertingGeofenceList(); // Get the geofences that were triggered. A single event can trigger
             JSONArray geofences = ObjectToJSON.convertGeofenceListToJSONArray(triggeringGeofences);
+            JSONObject location = ObjectToJSON.convertLocationToJSON(geofenceData.getConvertingLocation());
+
+            JSONObject returnObject = new JSONObject();
+            try {
+                returnObject.put("geofences", geofences);
+                returnObject.put("location", location);
+                returnObject.put("conversion", geofenceData.getConversion());
+            } catch (JSONException e) {
+                Log.d(TAG, e.getLocalizedMessage());
+            }
+
             if (!LocationUtils.isApplicationInForeground(context)) {
-                JSONObject json = ObjectToJSON.convertLocationToJSON(geofenceData.getConvertingLocation());
-                runBackgroundTask(Constants.FunctionType.GEOFENCE_FUNCTION, context, json);
+                runBackgroundTask(Constants.FunctionType.GEOFENCE_FUNCTION, context, returnObject);
             } else {
-                CordovaUtils.sendEvent(Constants.Event.ON_GEOFENCE_RESULT, geofences);
+                CordovaUtils.sendEvent(Constants.Event.ON_GEOFENCE_RESULT, returnObject);
             }
         } else {
             Log.e(TAG, "Invalid trigger type: " + triggerType);
