@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+
 package com.huawei.hms.cordova.analytics;
 
 import android.content.Context;
@@ -33,6 +34,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -42,6 +44,7 @@ public class HMSAnalyticsModule extends CordovaBaseModule {
 
     //Weak Context Instance
     private final WeakReference<Context> weakContext;
+
     //ViewModel instance
     private final HMSAnalyticsContract.Presenter viewModel;
 
@@ -52,6 +55,19 @@ public class HMSAnalyticsModule extends CordovaBaseModule {
 
     private Context getContext() {
         return weakContext.get();
+    }
+
+    @CordovaMethod
+    @HMSLog
+    public void getInstance(final CorPack corPack, JSONArray args, final Promise promise) throws JSONException {
+        JSONObject params = args.getJSONObject(0);
+        if (params.isNull("routePolicy")) {
+            viewModel.setAnalyticsInstance(viewModel.getAnalyticsInstance(getContext()));
+        } else {
+            viewModel.setAnalyticsInstance(
+                viewModel.getAnalyticsInstance(getContext(), params.getString("routePolicy")));
+        }
+        promise.success();
     }
 
     @CordovaMethod
@@ -100,7 +116,8 @@ public class HMSAnalyticsModule extends CordovaBaseModule {
 
     @CordovaMethod
     @HMSLog
-    public void setMinActivitySessions(final CorPack corPack, JSONArray args, final Promise promise) throws JSONException {
+    public void setMinActivitySessions(final CorPack corPack, JSONArray args, final Promise promise)
+        throws JSONException {
         JSONObject params = args.getJSONObject(0);
         viewModel.setMinActivitySessions(params.getLong("milliseconds"));
         promise.success();
@@ -139,7 +156,8 @@ public class HMSAnalyticsModule extends CordovaBaseModule {
     @HMSLog
     public void getUserProfiles(final CorPack corPack, JSONArray args, final Promise promise) throws JSONException {
         JSONObject params = args.getJSONObject(0);
-        viewModel.getUserProfiles(new HMSAnalyticsModule.HMSAnalyticsResultHandler<>(promise), params.getBoolean("predefined"));
+        viewModel.getUserProfiles(new HMSAnalyticsModule.HMSAnalyticsResultHandler<>(promise),
+            params.getBoolean("predefined"));
     }
 
     @CordovaMethod
@@ -168,14 +186,17 @@ public class HMSAnalyticsModule extends CordovaBaseModule {
 
     @CordovaMethod
     @HMSLog
-    public void getReportPolicyThreshold(final CorPack corPack, JSONArray args, final Promise promise) throws JSONException {
+    public void getReportPolicyThreshold(final CorPack corPack, JSONArray args, final Promise promise)
+        throws JSONException {
         JSONObject params = args.getJSONObject(0);
-        viewModel.getReportPolicyThreshold(new HMSAnalyticsModule.HMSAnalyticsResultHandler<>(promise), getReportPolicyType(params.getString("reportPolicyType")));
+        viewModel.getReportPolicyThreshold(new HMSAnalyticsModule.HMSAnalyticsResultHandler<>(promise),
+            getReportPolicyType(params.getString("reportPolicyType")));
     }
 
     @CordovaMethod
     @HMSLog
-    public void setRestrictionEnabled(final CorPack corPack, JSONArray args, final Promise promise) throws JSONException {
+    public void setRestrictionEnabled(final CorPack corPack, JSONArray args, final Promise promise)
+        throws JSONException {
         JSONObject params = args.getJSONObject(0);
         viewModel.setRestrictionEnabled(params.getBoolean("isEnabled"));
         promise.success();
@@ -185,6 +206,28 @@ public class HMSAnalyticsModule extends CordovaBaseModule {
     @HMSLog
     public void isRestrictionEnabled(final CorPack corPack, JSONArray args, final Promise promise) {
         viewModel.isRestrictionEnabled(new HMSAnalyticsModule.HMSAnalyticsResultHandler<>(promise));
+    }
+
+    @CordovaMethod
+    @HMSLog
+    public void setCollectAdsIdEnabled(final CorPack corPack, JSONArray args, final Promise promise)
+        throws JSONException {
+        JSONObject params = args.getJSONObject(0);
+        viewModel.setCollectAdsIdEnabled(params.getBoolean("isEnabled"));
+        promise.success();
+    }
+
+    @CordovaMethod
+    @HMSLog
+    public void addDefaultEventParams(final CorPack corPack, JSONArray args, final Promise promise)
+        throws JSONException {
+        JSONObject params = args.getJSONObject(0);
+        if (!params.isNull("params")) {
+            viewModel.addDefaultEventParams(jsonToBundle(params.getJSONObject("params")));
+        } else {
+            viewModel.addDefaultEventParams(null);
+        }
+        promise.success();
     }
 
     @CordovaMethod
@@ -209,38 +252,6 @@ public class HMSAnalyticsModule extends CordovaBaseModule {
         promise.success();
     }
     /* Private Inner Class */
-
-    /**
-     * HMSAnalyticsResultHandler static nested class is a helper class for reaching {@link HMSAnalyticsContract.ResultListener}.
-     */
-    private static final class HMSAnalyticsResultHandler<Object> implements HMSAnalyticsContract.ResultListener<Object> {
-
-        private final Promise promise;
-
-        HMSAnalyticsResultHandler(final Promise promise) {
-            this.promise = promise;
-        }
-
-        @Override
-        public void onSuccess(Object result) {
-            if (result instanceof JSONObject) {
-                promise.success((JSONObject) result);
-            } else if (result instanceof String) {
-                promise.success((String) result);
-            } else if (result instanceof Boolean) {
-                promise.success((Boolean) result);
-            } else if (result instanceof Long) {
-                promise.success((Long) result);
-            } else {
-                promise.success();
-            }
-        }
-
-        @Override
-        public void onFail(Exception exception) {
-            promise.error(exception.getMessage());
-        }
-    }
 
     private Set<ReportPolicy> jsonToSetReportPolicy(JSONObject reportPolicies) throws JSONException {
         Set<ReportPolicy> policies = new HashSet<>();
@@ -267,6 +278,15 @@ public class HMSAnalyticsModule extends CordovaBaseModule {
         return ReportPolicy.valueOf(reportPolicyType);
     }
 
+    private ArrayList<Bundle> jsonArrayToBundleArrayList(JSONArray jsonArray) throws JSONException {
+        ArrayList<Bundle> listBundle = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(0);
+            listBundle.add(jsonToBundle(jsonObject));
+        }
+        return listBundle;
+    }
+
     private Bundle jsonToBundle(JSONObject jsonObject) throws JSONException {
         Bundle bundle = new Bundle();
         Iterator<String> iterator = jsonObject.keys();
@@ -283,10 +303,45 @@ public class HMSAnalyticsModule extends CordovaBaseModule {
                 bundle.putString(key, (String) val);
             } else if (val instanceof Boolean) {
                 bundle.putBoolean(key, (Boolean) val);
+            } else if (val instanceof JSONArray) {
+                bundle.putParcelableArrayList(key, jsonArrayToBundleArrayList((JSONArray) val));
             } else {
                 Log.e(TAG, "unable to transform json to bundle " + key);
             }
         }
         return bundle;
+    }
+
+    /**
+     * HMSAnalyticsResultHandler static nested class is a helper class for reaching {@link HMSAnalyticsContract.ResultListener}.
+     */
+    private static final class HMSAnalyticsResultHandler<Object>
+        implements HMSAnalyticsContract.ResultListener<Object> {
+
+        private final Promise promise;
+
+        HMSAnalyticsResultHandler(final Promise promise) {
+            this.promise = promise;
+        }
+
+        @Override
+        public void onSuccess(Object result) {
+            if (result instanceof JSONObject) {
+                promise.success((JSONObject) result);
+            } else if (result instanceof String) {
+                promise.success((String) result);
+            } else if (result instanceof Boolean) {
+                promise.success((Boolean) result);
+            } else if (result instanceof Long) {
+                promise.success((Long) result);
+            } else {
+                promise.success();
+            }
+        }
+
+        @Override
+        public void onFail(Exception exception) {
+            promise.error(exception.getMessage());
+        }
     }
 }

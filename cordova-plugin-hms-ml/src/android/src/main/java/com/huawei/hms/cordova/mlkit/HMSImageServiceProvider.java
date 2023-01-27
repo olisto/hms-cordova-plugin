@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -42,15 +42,25 @@ import java.io.IOException;
 public class HMSImageServiceProvider extends CordovaPlugin {
 
     public static final String TAG = HMSImageServiceProvider.class.getSimpleName();
+
     private PermissionUtils permissionUtils = new PermissionUtils();
+
     private MLImageClassificationAnalyser imageClassificationAnalyse;
+
     private MLImageSegmentationAnalyser imageSegmentation;
+
     private MLImageLandMarkAnalyser imageLandMarkAnalyse;
+
     private MLImageObjectAnalyser imageObjectAnalyser;
+
     private MLDocumentSkewCorrectionAnalyser documentSkewCorrection;
+
     private MLImageSuperResolutionAnalyser imageSuperResolution;
+
     private MLStillSceneDetectionAnalyser sceneDetectionStillAnalyse;
+
     private MLTextImageSuperResolutionAnalyser textImageSuperResolution;
+
     private MLProductVisionAnalyser productVisionAnalyser;
 
     public void pluginInitialize() {
@@ -129,7 +139,7 @@ public class HMSImageServiceProvider extends CordovaPlugin {
                         try {
                             imageObjectAnalyser.stopObject(callbackContext);
                         } catch (IOException e) {
-                            Log.e(TAG, "" + e.getMessage());
+                            Log.e(TAG, "ObjectAnalyserCloseError" + e.getMessage());
                         }
                     });
                     return true;
@@ -140,7 +150,7 @@ public class HMSImageServiceProvider extends CordovaPlugin {
                         try {
                             imageObjectAnalyser.getObjectAnalyserSetting(callbackContext);
                         } catch (JSONException e) {
-                            Log.e(TAG, "" + e.getMessage());
+                            Log.e(TAG, "ObjectAnalyserSettingError" + e.getMessage());
                         }
                     });
                     return true;
@@ -228,6 +238,7 @@ public class HMSImageServiceProvider extends CordovaPlugin {
                     imageSuperResolution.initializeISRAnalyser(params, callbackContext, cordova);
                     return true;
                 }
+
                 if (action.equals("ACTION_IMAGE_SUPER_RESOLUTION_ANALYSE_SETTING")) {
                     HMSLogger.getInstance(cordova.getContext())
                         .startMethodExecutionTimer("imageSuperResolutionAnalyseSetting");
@@ -273,7 +284,7 @@ public class HMSImageServiceProvider extends CordovaPlugin {
 
                 }
             } catch (IOException e) {
-                Log.e(TAG, "" + e.getMessage());
+                Log.e(TAG, "Initializer Error: " + e.getMessage());
             }
         }
 

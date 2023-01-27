@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -31,7 +31,11 @@ import {
   NativeAdEvents,
   NativeAdTemplate,
   Color,
-  HMSAds
+  HMSAds,
+  VastEvents,
+  CreativeMatchType,
+  MediaDirection
+
 } from '@hmscore/ionic-native-hms-ads/ngx';
 import { from } from 'rxjs';
 @Component({
@@ -47,6 +51,8 @@ export class HomePage {
   bannerAd;
   rollAdInstance;
   nativeAdInstance;
+  vast;
+  sdkConf;
 
   constructor(private hmsAds: HMSAds) {
     this.bannerAdSize = BannerAdSize.BANNER_SIZE_360_144;
@@ -90,7 +96,10 @@ export class HomePage {
   }
 
   getReferrerDetails() {
-    this.hmsAds.getInstallReferrer()
+    const reqOpt = {
+      installChannel : "test",
+  };
+    this.hmsAds.getInstallReferrer(reqOpt)
         .then((result) => alert('getInstallReferrer :: ' + JSON.stringify(result)))
         .catch((error) => alert('getInstallReferrer :: Error!' + error));
 
@@ -257,6 +266,9 @@ export class HomePage {
     } else if (this.nativeAdSize === NativeAdTemplate.NATIVE_AD_VIDEO_TEMPLATE) {
       adId = 'testy63txaom86';
       nativeElem.style.height = '300px';
+    }else if (this.nativeAdSize === NativeAdTemplate.NATIVE_AD_WITH_APP_DOWNLOAD_BTN_TEMPLATE) {
+      adId = 'testy63txaom86';
+      nativeElem.style.height = '300px';
     }
 
     const template = this.nativeAdSize as NativeAdTemplate;
@@ -290,6 +302,82 @@ export class HomePage {
     });
     const res = await this.nativeAdInstance.dislikeAd('Do not like this ad!');
     alert('dislikeAd -> success! ' + JSON.stringify(res));
+  }
+
+  async vastCreate() {
+    if (this.vast) await this.vast.release();
+    this.vast = new this.hmsAds.HMSVast();
+    await this.vast.create("vast-element");
+    this.vast.on(VastEvents.VAST_LOAD_SUCCESS, async() => {
+        console.log("vast loaded");
+    });
+
+    this.vast.on(VastEvents.VAST_LOAD_FAILED, async() => {
+        console.log("vast failed");
+    });
+
+    var adParam = {
+        adId: "testy3cglm3pj0",
+        totalDuration: 99,
+        creativeMatchStrategy: CreativeMatchType.ANY,
+        isAllowMobileTraffic: false,
+        adOrientation: MediaDirection.LANDSCAPE,
+        maxAdPods: 1,
+        requestOption: {
+            adContentClassification: AdContentClassification.AD_CONTENT_CLASSIFICATION_A,
+            appCountry: "TR",
+            appLang: "En",
+            requestLocation: true,
+            nonPersonalizedAd: NonPersonalizedAd.ALLOW_NON_PERSONALIZED,
+            tagForChildProtection: ChildProtection.TAG_FOR_CHILD_PROTECTION_UNSPECIFIED,
+            tagForUnderAgeOfPromise: UnderAgeOfPromise.PROMISE_UNSPECIFIED,
+        }    
+    };
+
+    var playerConfig = {
+        enableRotation: false,
+        isEnableCutout: false,
+        skipLinearAd: false,
+        isEnablePortrait: true
+    };
+    await this.vast.loadAd({
+        adParam: adParam,
+        playerConfig: playerConfig,
+        isTestAd: false ,
+        isAdLoadWithAdsData: true,
+        isCustomVideoPlayer: false
+
+    });
+  }
+
+  initVast(){
+    this.hmsAds.initVast(this.sdkConf)
+      .then((result) => alert("initVast :: " + JSON.stringify(result)))
+      .catch((error) => alert("initVast :: Error!" + error));
+  } 
+
+  getVastSdkConfiguration(){
+    this.sdkConf = this.hmsAds.getVastSdkConfiguration()
+      .then((result) => alert("getVastSdkConfiguration :: " + JSON.stringify(result)))
+      .catch((error) => alert("getVastSdkConfiguration :: Error!" + error));
+  }
+
+  updateSdkServerConfig(){
+    this.hmsAds.updateSdkServerConfig("testy3cglm3pj0")
+      .then((result) => alert("updateSdkServerConfig :: " + JSON.stringify(result)))
+      .catch((error) => alert("updateSdkServerConfig :: Error!" + error));
+  }
+
+  userAcceptAdLicense(){
+    this.hmsAds.userAcceptAdLicense(true)
+      .then((result) => alert("userAcceptAdLicense :: " + JSON.stringify(result)))
+      .catch((error) => alert("userAcceptAdLicense :: Error!" + error));
+  }
+
+  getEventProcessor() { 
+    this.hmsAds.getEventProcessor()
+      .then((result) => alert("getEventProcessor :: " + JSON.stringify(result)))
+      .catch((error) => alert("getEventProcessor :: Error!" + error));
   }
 
   onBannerAdSizeChange(bannerAdSize) {
@@ -327,4 +415,6 @@ export class HomePage {
   logScrollEnd(event) {
     console.log('logScrollEnd : When Scroll Ends', event);
   }
+
+
 }

@@ -1,6 +1,6 @@
 {
   "name": "HMSPushDemo",
-  "version": "5.1.1-301",
+  "version": "6.7.0-300",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -60,7 +60,7 @@
     "tsconfig.app.json",
     "tsconfig.spec.json",
     "tslint.json",
-    "LICENCE",
+    "LICENSE",
     "README.md"
   ]
 }

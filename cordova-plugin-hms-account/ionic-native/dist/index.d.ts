@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -27,41 +27,75 @@ export declare enum Gender {
     FEMALE = 1,
     CONFIDENTIAL = 2
 }
-export interface AuthHuaweiId {
-    accessToken: string;
-    displayName: string;
-    email?: string;
-    familyName: string;
-    givenName: string;
-    idToken?: string;
-    unionId: string;
-    avatarUriString: string;
-    expressionTimeSecs: number;
-    openId: string;
+export declare enum AuthRequestOption {
+    SCOPE_EMAIL = "email",
+    SCOPE_ID = "id",
+    SCOPE_ID_TOKEN = "idToken",
+    SCOPE_PROFILE = "profile",
+    SCOPE_MOBILE_NUMBER = "mobileNumber",
+    SCOPE_UID = "uid",
+    SCOPE_AUTHORIZATION_CODE = "authorizationCode",
+    SCOPE_ACCESS_TOKEN = "accessToken",
+    SCOPE_DIALOG_AUTH = "dialogAuth",
+    SCOPE_SHIPPING_ADDRESS = "shippingAddress",
+    SCOPE_CARRIER_ID = "carrierId"
+}
+export declare enum AuthParams {
+    DEFAULT_AUTH_REQUEST_PARAM = "DEFAULT_AUTH_REQUEST_PARAM",
+    DEFAULT_AUTH_REQUEST_PARAM_GAME = "DEFAULT_AUTH_REQUEST_PARAM_GAME"
+}
+export declare enum PackageName {
+    HWID = "HWID",
+    ACCOUNT = "ACCOUNT"
+}
+export declare enum AuthIdTokenSignAlg {
+    PS256 = 1,
+    RS256 = 2
+}
+export interface AbstractAuthAccount {
     uid?: string;
-    countryCode?: string;
-    serviceCountryCode?: string;
+    openId: string;
+    displayName: string;
+    accessToken: string;
     status: number;
     gender: Gender;
-    describeContentsInAuthHuaweiId: number;
-    authorizedScopes: string[];
+    serviceCountryCode?: string;
+    countryCode?: string;
+    unionId: string;
+    email?: string;
     extensionScopes: string[];
+    idToken?: string;
+    expressionTimeSecs: number;
+    givenName: string;
+    familyName: string;
+    carrierId: number;
+    ageRange?: string;
+    homeZone: number;
+    authorizedScopes: string[];
+    avatarUriString: string;
     authorizationCode?: string;
-    huaweiAccount?: Account;
+    requestedScopes: string[];
+    account?: Account;
 }
-export interface AuthHuaweiIdBuilder {
+export interface AuthHuaweiId extends AbstractAuthAccount {
+    ageRangeFlag: number;
+}
+export interface AuthAccount extends AbstractAuthAccount {
+    accountFlag: number;
+}
+export interface AuthBuilder {
     openId: string;
     uid: string;
+    photoUriString: string;
     displayName: string;
-    photoUrl: string;
     accessToken: string;
     serviceCountryCode: string;
-    status: number;
     gender: Gender;
-    scopes: AuthScopeList[];
-    serverAuthCode: string;
+    status: number;
     unionId: string;
+    serverAuthCode: string;
     countryCode: string;
+    grantedScopes: AuthScopeList[];
 }
 export interface ContainScopesResult {
     containScopes: boolean;
@@ -83,43 +117,43 @@ export interface Account {
     type: string;
     name: string;
 }
-export declare enum AuthRequestOption {
-    SCOPE_ID_TOKEN = "idToken",
-    SCOPE_ACCESS_TOKEN = "accessToken",
-    SCOPE_MOBILE_NUMBER = "mobileNumber",
-    SCOPE_EMAIL = "email",
-    SCOPE_SHIPPING_ADDRESS = "shippingAddress",
-    SCOPE_UID = "uid",
-    SCOPE_ID = "id",
-    SCOPE_AUTHORIZATION_CODE = "authorizationCode",
-    SCOPE_PROFILE = "profile"
-}
-export declare enum ErrorCodes {
-    HuaweiIdAuthException = "503"
-}
-export declare enum HuaweiIdAuthParams {
-    DEFAULT_AUTH_REQUEST_PARAM = "DEFAULT_AUTH_REQUEST_PARAM",
-    DEFAULT_AUTH_REQUEST_PARAM_GAME = "DEFAULT_AUTH_REQUEST_PARAM_GAME"
+export interface AccountIcon {
+    icon: string;
+    description: string;
 }
 export interface SignInData {
     authRequestOption: AuthRequestOption[];
-    authParam?: HuaweiIdAuthParams;
+    authParam?: AuthParams;
     authScopeList?: AuthScopeList[];
+    authIdTokenSignAlg?: AuthIdTokenSignAlg;
+}
+export interface SignInData {
+    authRequestOption: AuthRequestOption[];
+    authParam?: AuthParams;
+    authScopeList?: AuthScopeList[];
+    authIdTokenSignAlg?: AuthIdTokenSignAlg;
 }
 export declare class HMSAccountOriginal extends IonicNativePlugin {
-    signIn(signInData: SignInData): Promise<AuthHuaweiId>;
+    signIn(signInData: SignInData, packageName: string): Promise<AuthHuaweiId>;
     signOut(): Promise<void>;
     cancelAuthorization(): Promise<void>;
-    silentSignIn(authParams: HuaweiIdAuthParams): Promise<AuthHuaweiId>;
+    silentSignIn(authParams: AuthParams, packageName: string): Promise<AuthHuaweiId>;
     enableLogger(): Promise<void>;
     disableLogger(): Promise<void>;
+}
+export declare class HMSAccountAuthServiceOriginal extends IonicNativePlugin {
+    signIn(signInData: SignInData, packageName: string): Promise<AuthAccount>;
+    getIndependentSignIn(accessToken: string): Promise<AuthAccount>;
+    signOut(): Promise<void>;
+    cancelAuthorization(): Promise<void>;
+    silentSignIn(authParams: AuthParams, packageName: string): Promise<AuthAccount>;
+    getChannel(): Promise<AccountIcon>;
 }
 export declare enum Theme {
     THEME_NO_TITLE = 0,
     THEME_FULL_TITLE = 1
 }
 export declare enum ColorPolicy {
-    COLOR_POLICY_BLUE = 0,
     COLOR_POLICY_RED = 1,
     COLOR_POLICY_WHITE = 2,
     COLOR_POLICY_WHITE_WITH_BORDER = 3,
@@ -135,10 +169,16 @@ export declare class HMSHuaweiIdAuthButtonOriginal extends IonicNativePlugin {
     getHuaweiIdAuthButton(edittedButton: string, theme: Theme, colorPolicy: ColorPolicy, cornerRadius: CornerRadius): void;
 }
 export declare class HMSHuaweiIdAuthManagerOriginal extends IonicNativePlugin {
-    getAuthResult(): Promise<AuthHuaweiId>;
-    getAuthResultWithScope(authHuaweiId: AuthScopeList[]): Promise<AuthHuaweiId>;
-    containScopes(authHuaweiId: AuthHuaweiIdBuilder, authScopeList: AuthScopeList[]): Promise<ContainScopesResult>;
-    addAuthScopes(requestCode: number, authScopeList: AuthScopeList[]): Promise<void>;
+    getAuthResult(packageName: String): Promise<AuthHuaweiId>;
+    getAuthResultWithScope(authHuaweiId: AuthScopeList[], packageName: string): Promise<AuthHuaweiId>;
+    containScopes(authHuaweiId: AuthBuilder, authScopeList: AuthScopeList[], packageName: string): Promise<ContainScopesResult>;
+    addAuthScopes(requestCode: number, authScopeList: AuthScopeList[], packageName: string): Promise<void>;
+}
+export declare class HMSAccountAuthManagerOriginal extends IonicNativePlugin {
+    getAuthResult(packageName: string): Promise<AuthAccount>;
+    getAuthResultWithScope(authAccount: AuthScopeList[], packageName: string): Promise<AuthAccount>;
+    containScopes(authAccount: AuthBuilder, authScopeList: AuthScopeList[], packageName: string): Promise<ContainScopesResult>;
+    addAuthScopes(requestCode: number, authScopeList: AuthScopeList[], packageName: string): Promise<void>;
 }
 export declare class HMSHuaweiIdAuthToolOriginal extends IonicNativePlugin {
     deleteAuthInfo(accessToken: string): Promise<void>;
@@ -146,17 +186,20 @@ export declare class HMSHuaweiIdAuthToolOriginal extends IonicNativePlugin {
     requestAccessToken(account: Account, authScopeList: AuthScopeList[]): Promise<string>;
 }
 export declare class HMSNetworkToolOriginal extends IonicNativePlugin {
-    buildNetworkURL(domainHttps: DomainInfo): Promise<String>;
-    buildNetworkCookie(cookie: Cookie): Promise<String>;
+    buildNetworkURL(domainHttps: DomainInfo): Promise<string>;
+    buildNetworkCookie(cookie: Cookie): Promise<string>;
 }
 export declare class HMSReadSMSManagerOriginal extends IonicNativePlugin {
-    smsVerificationCode(): Promise<String>;
-    obtainHashCode(): Promise<String>;
+    smsVerificationCode(): Promise<string>;
+    obtainHashCode(): Promise<string>;
+    startConsent(phoneNumber: string): Promise<string>;
 }
 
 export declare const HMSAccount: HMSAccountOriginal;
+export declare const HMSAccountAuthService: HMSAccountAuthServiceOriginal;
 export declare const HMSHuaweiIdAuthButton: HMSHuaweiIdAuthButtonOriginal;
 export declare const HMSHuaweiIdAuthManager: HMSHuaweiIdAuthManagerOriginal;
+export declare const HMSAccountAuthManager: HMSAccountAuthManagerOriginal;
 export declare const HMSHuaweiIdAuthTool: HMSHuaweiIdAuthToolOriginal;
 export declare const HMSNetworkTool: HMSNetworkToolOriginal;
 export declare const HMSReadSMSManager: HMSReadSMSManagerOriginal;

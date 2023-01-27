@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -13,19 +13,19 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
+import { IonicModule } from "@ionic/angular";
 
-import { SecondPage } from './second.page';
+import { SecondPage } from "./second.page";
 
-describe('SecondPage', () => {
+describe("SecondPage", () => {
   let component: SecondPage;
   let fixture: ComponentFixture<SecondPage>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SecondPage ],
-      imports: [IonicModule.forRoot()]
+      declarations: [SecondPage],
+      imports: [IonicModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SecondPage);
@@ -33,7 +33,7 @@ describe('SecondPage', () => {
     fixture.detectChanges();
   }));
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

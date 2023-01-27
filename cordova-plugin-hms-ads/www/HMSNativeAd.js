@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ class HMSNativeAd extends ads_1.Ads {
             });
             const config = { attributes: true, childList: true, subtree: true };
             nativeMutationObserver.observe(document.body, config);
-            const initialProps = layout_1.getInitialPropsOfHTMLElementFrom(options.div);
+            const initialProps = (0, layout_1.getInitialPropsOfHTMLElementFrom)(options.div);
             if (bounds) {
                 if (bounds.marginRight)
                     initialProps['marginRight'] = bounds.marginRight;
@@ -187,6 +187,25 @@ class HMSNativeAd extends ads_1.Ads {
     }
     videoOperatorStop() {
         return this.run('videoOperatorStop');
+    }
+    //AppDownloadButton
+    setOnDownloadStatusChangedListener() {
+        return this.run('setOnDownloadStatusChangedListener');
+    }
+    setOnNonWifiDownloadListener() {
+        return this.run('setOnNonWifiDownloadListener');
+    }
+    setShowPermissionDialog(show) {
+        return this.run('setShowPermissionDialog', { "show": show });
+    }
+    setAllowedNonWifiNetwork(allowed) {
+        return this.run('setAllowedNonWifiNetwork', { "allowed": allowed });
+    }
+    cancel() {
+        return this.run('cancel');
+    }
+    continueDownload() {
+        return this.run('continueDownload');
     }
 }
 exports.HMSNativeAd = HMSNativeAd;

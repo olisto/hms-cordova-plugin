@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-import {Component} from '@angular/core';
-import {ActivityConversionResponse, ActivityType, ConversionType, Events, HMSLocation} from '@hmscore/ionic-native-hms-location/ngx';
-import {Platform} from '@ionic/angular';
+import { Component } from '@angular/core';
+import { ActivityConversionResponse, ActivityType, ConversionType, Events, HMSLocation } from '@hmscore/ionic-native-hms-location/ngx';
+import { Platform } from '@ionic/angular';
 
 @Component({
     selector: 'app-activity-conversion',
@@ -53,37 +53,6 @@ export class ActivityConversionPage {
         }).catch(reason => console.log(reason));
     }
 
-    async requestActivityIdentificationPermission() {
-        const button = document.getElementById('requestActivityIdentificationPermission');
-        const result = await this.activityService.requestActivityRecognitionPermission();
-        if (result === true) {
-            this.newElement.innerHTML = 'Permission is granted.';
-            this.newElement.classList.remove('alert-danger');
-            this.newElement.classList.add('alert-success');
-        } else {
-            this.newElement.innerHTML = 'Permission is denied.';
-            this.newElement.classList.remove('alert-success');
-            this.newElement.classList.add('alert-danger');
-        }
-        button.parentNode.insertBefore(this.newElement, button.nextSibling);
-    }
-
-    async hasPermission() {
-        const button = document.getElementById('hasPermission');
-        const isGranted = await this.activityService.hasActivityRecognitionPermission();
-        console.log(isGranted);
-        if (isGranted === true) {
-            this.newElement.innerHTML = 'TRUE';
-            this.newElement.classList.remove('alert-danger');
-            this.newElement.classList.add('alert-success');
-        } else {
-            this.newElement.innerHTML = 'FALSE';
-            this.newElement.classList.remove('alert-success');
-            this.newElement.classList.add('alert-danger');
-        }
-        button.parentNode.insertBefore(this.newElement, button.nextSibling);
-    }
-
     addToList() {
         let currentConversionType;
         let currentActivityType;
@@ -110,26 +79,34 @@ export class ActivityConversionPage {
         } else {
             currentActivityType = ActivityType.RUNNING;
         }
-        const item = {conversionType: currentConversionType, activityType: currentActivityType};
+        const item = { conversionType: currentConversionType, activityType: currentActivityType };
         this.activityConversions.push(item);
         this.conversionListLog.innerHTML = JSON.stringify(item) + '<br>' + this.conversionListLog.innerHTML;
     }
 
     async createActivityConversionUpdates() {
-        const requestCodeValue = parseInt(this.addRequestCode, 10);
-        const isSuccess = await this.activityService.createActivityConversionUpdates(requestCodeValue, this.activityConversions, (data) => {
-            console.log(JSON.stringify(data));
-        });
-        this.activityConversionUpdateRequests.push(requestCodeValue);
-        this.activityConversions.length = 0;
-        this.conversionListLog.innerHTML = '';
-        this.addRequestCode = '';
+        try {
+            const requestCodeValue = parseInt(this.addRequestCode, 10);
+            const isSuccess = await this.activityService.createActivityConversionUpdates(requestCodeValue, this.activityConversions, (data) => {
+                console.log(JSON.stringify(data));
+            });
+            this.activityConversionUpdateRequests.push(requestCodeValue);
+            this.activityConversions.length = 0;
+            this.conversionListLog.innerHTML = '';
+            this.addRequestCode = '';
+        } catch (error) {
+            alert(JSON.stringify(error));
+        }
     }
 
     async deleteActivityConversionUpdates() {
-        const requestCodeValue = parseInt(this.deleteRequestCode, 10);
-        await this.activityService.deleteActivityConversionUpdates(requestCodeValue);
-        this.cleanInputs();
+        try {
+            const requestCodeValue = parseInt(this.deleteRequestCode, 10);
+            await this.activityService.deleteActivityConversionUpdates(requestCodeValue);
+            this.cleanInputs();
+        } catch (error) {
+            alert(JSON.stringify(error));
+        }
     }
 
     private cleanInputs() {

@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -14,19 +14,19 @@
     limitations under the License.
 */
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
+import { IonicModule } from "@ionic/angular";
 
-import { LocalPage } from './local.page';
+import { LocalPage } from "./local.page";
 
-describe('LocalPage', () => {
+describe("LocalPage", () => {
   let component: LocalPage;
   let fixture: ComponentFixture<LocalPage>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LocalPage ],
-      imports: [IonicModule.forRoot()]
+      declarations: [LocalPage],
+      imports: [IonicModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LocalPage);
@@ -34,7 +34,7 @@ describe('LocalPage', () => {
     fixture.detectChanges();
   }));
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

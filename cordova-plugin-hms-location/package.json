@@ -1,7 +1,7 @@
 {
   "name": "@triggi/cordova-plugin-hms-location",
   "description": "Cordova HMS Location Plugin",
-  "version": "5.1.0-303",
+  "version": "6.4.0-300",
   "main": "./www/index.js",
   "types": "./types/index.d.ts",
   "repository": {
@@ -12,7 +12,7 @@
   "bugs": "https://github.com/HMS-Core/hms-cordova-plugin/issues",
   "homepage": "https://developer.huawei.com/consumer/en/doc/overview/HMS-Core-Plugin",
   "license": "Apache-2.0",
-  "licenseFilename": "LICENCE",
+  "licenseFilename": "LICENSE",
   "readmeFilename": "README.md",
   "cordova": {
     "id": "cordova-plugin-hms-location",
@@ -32,11 +32,11 @@
   ],
   "files": [
     "hooks",
-    "src/android/src/main/java",
-    "src/android/plugin.gradle",
+    "ionic-native",
+    "src",
     "types",
     "www",
-    "LICENCE",
+    "LICENSE",
     "package.json",
     "plugin.xml",
     "README.md"
@@ -45,11 +45,11 @@
     "@types/cordova": "0.0.34"
   },
   "devDependencies": {
-    "typescript": "^4.1.2"
+    "typescript": "3.9.5"
   },
   "scripts": {
-    "build:core": "tsc",
+    "build:core": "node ./node_modules/typescript/bin/tsc",
     "build": "npm run build:core",
-    "watch": "tsc --watch"
+    "watch": "node ./node_modules/typescript/bin/tsc --watch"
   }
 }

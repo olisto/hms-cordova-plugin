@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -21,18 +21,18 @@ import android.util.SparseArray;
 
 import com.huawei.hmf.tasks.Task;
 import com.huawei.hms.cordova.mlkit.helpers.CordovaErrors;
+import com.huawei.hms.cordova.mlkit.helpers.CordovaHelpers;
 import com.huawei.hms.cordova.mlkit.interfaces.HMSProvider;
+import com.huawei.hms.cordova.mlkit.logger.HMSLogger;
+import com.huawei.hms.cordova.mlkit.logger.HMSMethod;
 import com.huawei.hms.cordova.mlkit.utils.HMSMLUtils;
-import com.huawei.hms.mlsdk.face.MLFace;
-import com.huawei.hms.mlsdk.face.MLFaceAnalyzer;
 import com.huawei.hms.cordova.mlkit.utils.PlatformUtils;
 import com.huawei.hms.cordova.mlkit.utils.TextUtils;
-import com.huawei.hms.cordova.mlkit.logger.HMSLogger;
-import com.huawei.hms.cordova.mlkit.helpers.CordovaHelpers;
-import com.huawei.hms.cordova.mlkit.logger.HMSMethod;
 import com.huawei.hms.mlsdk.MLAnalyzerFactory;
 import com.huawei.hms.mlsdk.common.MLException;
 import com.huawei.hms.mlsdk.common.MLFrame;
+import com.huawei.hms.mlsdk.face.MLFace;
+import com.huawei.hms.mlsdk.face.MLFaceAnalyzer;
 import com.huawei.hms.mlsdk.face.MLFaceAnalyzerSetting;
 import com.huawei.hms.mlsdk.face.face3d.ML3DFace;
 import com.huawei.hms.mlsdk.face.face3d.ML3DFaceAnalyzer;
@@ -47,10 +47,15 @@ import java.util.List;
 
 public class MLStillFaceAnalyser extends HMSProvider {
     private String TAG = MLStillFaceAnalyser.class.getSimpleName();
+
     private MLFaceAnalyzer analyzer;
+
     private ML3DFaceAnalyzer analyzer3d;
+
     private boolean flag = false;
+
     private MLFaceAnalyzerSetting mlFaceAnalyzerSetting;
+
     private ML3DFaceAnalyzerSetting ml3DFaceAnalyzerSetting;
 
     public MLStillFaceAnalyser(Context ctx) {
@@ -68,17 +73,17 @@ public class MLStillFaceAnalyser extends HMSProvider {
         switch (analyseMode) {
             case 0: {
                 analyzer = createAnalyzer(mlFaceAnalyserSetting);
-                Task<List<MLFace>> task = analyzer.asyncAnalyseFrame(faceFrame);
-                task.addOnSuccessListener(PlatformUtils.successListener(method, getActivity(), callbackContext,
-                    TextUtils.FROM_MLFACE_TO_JSON_OBJECT))
-                    .addOnFailureListener(PlatformUtils.failureListener(method, getActivity(), callbackContext));
+                SparseArray<MLFace> analyseFrame = analyzer.analyseFrame(faceFrame);
+                callbackContext.success(TextUtils.fromSparseArrayStillFaceAnalyseToJSON(analyseFrame));
+                HMSLogger.getInstance(getContext()).sendSingleEvent("stillFaceAnalyser");
                 break;
             }
             case 1: {
                 analyzer = createAnalyzer(mlFaceAnalyserSetting);
-                SparseArray<MLFace> analyseFrame = analyzer.analyseFrame(faceFrame);
-                callbackContext.success(TextUtils.fromSparseArrayStillFaceAnalyseToJSON(analyseFrame));
-                HMSLogger.getInstance(getContext()).sendSingleEvent("stillFaceAnalyser");
+                Task<List<MLFace>> task = analyzer.asyncAnalyseFrame(faceFrame);
+                task.addOnSuccessListener(PlatformUtils.successListener(method, getActivity(), callbackContext,
+                    TextUtils.FROM_MLFACE_TO_JSON_OBJECT))
+                    .addOnFailureListener(PlatformUtils.failureListener(method, getActivity(), callbackContext));
                 break;
             }
             case 2: {

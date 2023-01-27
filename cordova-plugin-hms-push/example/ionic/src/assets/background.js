@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -15,23 +15,23 @@
 */
 
 var data = {
-    "key":"value"
+  key: "value",
 };
 
-onGetItemResponse((result)=>{
-    console.log(JSON.stringify(result));
+onGetItemResponse((result) => {
+  console.log(JSON.stringify(result));
 });
 
-onBackgroundRemoteMessageReceived((remoteMessage)=>{
-    const jsonData = JSON.parse(remoteMessage.data);
-    const headlessNotification = {
-                "title": "[Headless] " + jsonData.title,
-                "message": jsonData.message.replace("{{name}}","YourName")
-            };
-    const notification = JSON.stringify(headlessNotification);
-    HmsLocalNotification.backgroundLocalNotification(notification);
+onBackgroundRemoteMessageReceived((remoteMessage) => {
+  const jsonData = JSON.parse(remoteMessage.data);
+  const headlessNotification = {
+    title: "[Headless] " + jsonData.title,
+    message: jsonData.message.replace("{{name}}", "YourName"),
+  };
+  const notification = JSON.stringify(headlessNotification);
+  HmsLocalNotification.backgroundLocalNotification(notification);
 });
 
-HmsPush.setItem("test",JSON.stringify(data));
+HmsPush.setItem("test", JSON.stringify(data));
 HmsPush.getItem("test");
 HmsPush.removeItem("test");

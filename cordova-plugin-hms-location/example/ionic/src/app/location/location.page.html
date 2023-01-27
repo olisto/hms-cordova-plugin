@@ -1,5 +1,5 @@
 <!--
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -28,14 +28,6 @@
 </ion-header>
 
 <ion-content>
-    <button (click)="requestLocationPermission()" class="btn btn-primary btn-lg btn-block mt-3"
-            id="requestLocationPermission"
-            type="button">Request Location Permissions
-    </button>
-    <button (click)="hasLocationPermission()" class="btn btn-primary btn-lg btn-block" id="hasLocationPermission"
-            type="button">Has
-        Location Permission
-    </button>
     <div class="input-group mt-3">
         <div class="input-group-prepend">
             <span class="input-group-text">Request Code:</span>
@@ -45,7 +37,8 @@
                id="addRequestCode"
                type="text">
     </div>
-    <button (click)="requestLocationUpdates()" class="btn btn-primary btn-lg btn-block" id="requestLocationUpdates"
+    <button (click)="requestLocationUpdates()" class="btn btn-primary btn-lg btn-block"
+            id="requestLocationUpdates"
             type="button">Request
         Location Updates
     </button>
@@ -53,7 +46,8 @@
     <div style="width:100%;height:150px;background-color:#e5e7e9;overflow: scroll">
         <label id="locationUpdateLogs"></label>
     </div>
-    <button (click)="getLastLocation()" class="btn btn-primary btn-lg btn-block" id="getLastLocation" type="button">Get
+    <button (click)="getLastLocation()" class="btn btn-primary btn-lg btn-block"
+            id="getLastLocation" type="button">Get
         Last Known
         Location
     </button>
@@ -68,20 +62,23 @@
     <div class="container overflow-auto">
         <label id="getLastLocationWithAddressLog"></label>
     </div>
-    <button (click)="getLocationAvailability()" class="btn btn-primary btn-lg btn-block" id="getLocationAvailability"
+    <button (click)="getLocationAvailability()" class="btn btn-primary btn-lg btn-block"
+            id="getLocationAvailability"
             type="button">Get
         Location Availability
     </button>
     <div class="container overflow-auto">
         <label id="getLocationAvailabilityLog"></label>
     </div>
-    <button (click)="flushLocations()" class="btn btn-primary btn-lg btn-block" id="flushLocations" type="button">Flush
+    <button (click)="flushLocations()" class="btn btn-primary btn-lg btn-block" id="flushLocations"
+            type="button">Flush
         Location
     </button>
     <div class="container overflow-auto">
         <label id="flushLocationsLog"></label>
     </div>
-    <button (click)="checkLocationSettings()" class="btn btn-primary btn-lg btn-block" id="checkLocationSettings"
+    <button (click)="checkLocationSettings()" class="btn btn-primary btn-lg btn-block"
+            id="checkLocationSettings"
             type="button">Check
         Location Settings
     </button>
@@ -115,7 +112,8 @@
                id="removeRequestCode"
                type="text">
     </div>
-    <button (click)="removeLocationUpdates()" class="btn btn-primary btn-lg btn-block" id="removeLocationUpdates"
+    <button (click)="removeLocationUpdates()" class="btn btn-primary btn-lg btn-block"
+            id="removeLocationUpdates"
             type="button">Remove
         Location Updates
     </button>
@@ -131,7 +129,8 @@
                id="addRequestCodeEx"
                type="text">
     </div>
-    <button (click)="requestLocationUpdatesEx()" class="btn btn-primary btn-lg btn-block" id="requestLocationUpdatesEx"
+    <button (click)="requestLocationUpdatesEx()" class="btn btn-primary btn-lg btn-block"
+            id="requestLocationUpdatesEx"
             type="button">Request
         Location Updates Ex
     </button>
@@ -142,10 +141,13 @@
         <div class="input-group-prepend">
             <span class="input-group-text">Latitude and Longitude</span>
         </div>
-        <input [(ngModel)]="latitude" aria-label="Latitude" class="form-control" id="latitude" type="number">
-        <input [(ngModel)]="longitude" aria-label="Longitude" class="form-control" id="longitude" type="number">
+        <input [(ngModel)]="latitude" aria-label="Latitude" class="form-control" id="latitude"
+               type="number">
+        <input [(ngModel)]="longitude" aria-label="Longitude" class="form-control" id="longitude"
+               type="number">
     </div>
-    <button (click)="setMockLocation()" class="btn btn-primary btn-lg btn-block" id="setMockLocation" type="button">Set
+    <button (click)="setMockLocation()" class="btn btn-primary btn-lg btn-block"
+            id="setMockLocation" type="button">Set
         Mock
         Location
     </button>
@@ -160,9 +162,40 @@
             <option value="false">False</option>
         </select>
         <div class="input-group-append">
-            <button (click)="setMockMode()" class="btn btn-primary" id="setMockMode" type="button">Set Mock Mode
+            <button (click)="setMockMode()" class="btn btn-primary" id="setMockMode" type="button">
+                Set Mock Mode
             </button>
         </div>
+    </div>
+    <div class="container overflow-auto">
+        <label id="setMockModeLog"></label>
+    </div>
+
+
+    <button (click)="enableBackgroundLocation()" class="btn btn-primary btn-lg btn-block"
+            id="enableBackgroundLocation"
+            type="button">Enable Background Location
+    </button>
+    <div class="container overflow-auto">
+        <label id="enableBackgroundLocationLog"></label>
+    </div>
+    <button (click)="disableBackgroundLocation()" class="btn btn-primary btn-lg btn-block"
+            id="disableBackgroundLocation"
+            type="button">Disable Background Location
+    </button>
+    <div class="container overflow-auto">
+        <label id="disableBackgroundLocationLog"></label>
+    </div>
+    <button (click)="setLogConfig()" class="btn btn-primary btn-lg btn-block"
+            id="setLogConfig"
+            type="button">Set Log Config
+    </button>
+    <button (click)="getLogConfig()" class="btn btn-primary btn-lg btn-block"
+            id="getLogConfig"
+            type="button">Get Log Config
+    </button>
+    <div class="container overflow-auto">
+        <label id="getLogConfigLog"></label>
     </div>
     <script crossorigin="anonymous"
             integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

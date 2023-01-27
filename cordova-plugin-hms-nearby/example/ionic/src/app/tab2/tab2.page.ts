@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -13,21 +13,32 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-import { ChangeDetectorRef, Component } from '@angular/core';
-import { HMSNearby, HMSNearbyEvent, Message, PutOption, GetOption,
-   MessagePolicyDistanceType, MessagePolicyFindingMode, MessagePolicyTtlSeconds,
-   BleSignalUpdate, DistanceUpdate, MessageTimeout,
-   GET_OPTION_DEFAULT, MESSAGE_POLICY_BLE_ONLY, MESSAGE_PICKER_INCLUDE_ALL_TYPES } from '@hmscore/ionic-native-hms-nearby/ngx';
-import { ToastController } from '@ionic/angular';
-import { StringUtilsService } from '../_utils/string-utils.service';
+import { ChangeDetectorRef, Component } from "@angular/core";
+import {
+  HMSNearby,
+  HMSNearbyEvent,
+  Message,
+  PutOption,
+  GetOption,
+  MessagePolicyDistanceType,
+  MessagePolicyFindingMode,
+  MessagePolicyTtlSeconds,
+  BleSignalUpdate,
+  DistanceUpdate,
+  MessageTimeout,
+  GET_OPTION_DEFAULT,
+  MESSAGE_POLICY_BLE_ONLY,
+  MESSAGE_PICKER_INCLUDE_ALL_TYPES,
+} from "@hmscore/ionic-native-hms-nearby/ngx";
+import { ToastController } from "@ionic/angular";
+import { StringUtilsService } from "../_utils/string-utils.service";
 
 @Component({
-  selector: 'app-tab2',
-  templateUrl: 'tab2.page.html',
-  styleUrls: ['tab2.page.scss']
+  selector: "app-tab2",
+  templateUrl: "tab2.page.html",
+  styleUrls: ["tab2.page.scss"],
 })
 export class Tab2Page {
-
   textMessage;
   Status = Status;
   currentStatus = Status.IDLE;
@@ -35,79 +46,84 @@ export class Tab2Page {
 
   getOptions = [
     {
-      name: 'Default',
-      value: GET_OPTION_DEFAULT
+      name: "Default",
+      value: GET_OPTION_DEFAULT,
     },
     {
-      name: 'BLE Only',
+      name: "BLE Only",
       value: {
         policy: MESSAGE_POLICY_BLE_ONLY,
-        picker: MESSAGE_PICKER_INCLUDE_ALL_TYPES
-      }
+        picker: MESSAGE_PICKER_INCLUDE_ALL_TYPES,
+      },
     },
     {
-      name: 'Custom',
+      name: "Custom",
       value: {
         picker: {
           namespaceTypes: [
             {
-              namespace: 'testnamespace',
-              type: 'testType'
-            }
-          ]
+              namespace: "testnamespace",
+              type: "testType",
+            },
+          ],
         },
         policy: {
-          ttlSeconds: MessagePolicyTtlSeconds.POLICY_TTL_SECONDS_INFINITE
-        }
-      }
-    }
+          ttlSeconds: MessagePolicyTtlSeconds.POLICY_TTL_SECONDS_INFINITE,
+        },
+      },
+    },
   ];
   currentGetOption = GET_OPTION_DEFAULT;
 
   distanceTypes = [
     {
-      name: 'Default',
-      value: MessagePolicyDistanceType.POLICY_DISTANCE_TYPE_DEFAULT
+      name: "Default",
+      value: MessagePolicyDistanceType.POLICY_DISTANCE_TYPE_DEFAULT,
     },
     {
-      name: 'Earshot',
-      value: MessagePolicyDistanceType.POLICY_DISTANCE_TYPE_EARSHOT
-    }
+      name: "Earshot",
+      value: MessagePolicyDistanceType.POLICY_DISTANCE_TYPE_EARSHOT,
+    },
   ];
   findingModes = [
     {
-      name: 'Default',
-      value: MessagePolicyFindingMode.POLICY_FINDING_MODE_DEFAULT
+      name: "Default",
+      value: MessagePolicyFindingMode.POLICY_FINDING_MODE_DEFAULT,
     },
     {
-      name: 'Broadcast',
-      value: MessagePolicyFindingMode.POLICY_FINDING_MODE_BROADCAST
+      name: "Broadcast",
+      value: MessagePolicyFindingMode.POLICY_FINDING_MODE_BROADCAST,
     },
     {
-      name: 'Scan',
-      value: MessagePolicyFindingMode.POLICY_FINDING_MODE_SCAN
-    }
+      name: "Scan",
+      value: MessagePolicyFindingMode.POLICY_FINDING_MODE_SCAN,
+    },
   ];
   ttlSeconds = [
     {
-      name: 'Default',
-      value: MessagePolicyTtlSeconds.POLICY_TTL_SECONDS_DEFAULT
+      name: "Default",
+      value: MessagePolicyTtlSeconds.POLICY_TTL_SECONDS_DEFAULT,
     },
     {
-      name: 'Max',
-      value: MessagePolicyTtlSeconds.POLICY_TTL_SECONDS_MAX
+      name: "Max",
+      value: MessagePolicyTtlSeconds.POLICY_TTL_SECONDS_MAX,
     },
     {
-      name: 'Infinite',
-      value: MessagePolicyTtlSeconds.POLICY_TTL_SECONDS_INFINITE
-    }
+      name: "Infinite",
+      value: MessagePolicyTtlSeconds.POLICY_TTL_SECONDS_INFINITE,
+    },
   ];
 
   currentDistanceType = MessagePolicyDistanceType.POLICY_DISTANCE_TYPE_DEFAULT;
   currentFindingMode = MessagePolicyFindingMode.POLICY_FINDING_MODE_DEFAULT;
   currentTtlSeconds = MessagePolicyTtlSeconds.POLICY_TTL_SECONDS_DEFAULT;
 
-  constructor(private hmsNearby: HMSNearby, private strUtils: StringUtilsService, public toastController: ToastController, private cd: ChangeDetectorRef) {
+  constructor(
+    private hmsNearby: HMSNearby,
+    private strUtils: StringUtilsService,
+    public toastController: ToastController,
+    private cd: ChangeDetectorRef
+  ) {
     // add hms nearby event listeners
     this.addListeners();
   }
@@ -115,120 +131,145 @@ export class Tab2Page {
   // add plugin listeners
   addListeners() {
     this.hmsNearby.on(HMSNearbyEvent.EVENT_MESSAGE_ON_FOUND, (res: Message) => {
-      console.log('Message found: ' + JSON.stringify(res));
+      console.log("Message found: " + JSON.stringify(res));
 
       const text = this.strUtils.convertToString(res.content);
       console.log("text: " + text);
-      
+
       const message = {
         namespace: res.namespace,
         type: res.type,
-        text: text
-      }
+        text: text,
+      };
       this.messages.push(message);
       this.cd.detectChanges();
     });
 
     this.hmsNearby.on(HMSNearbyEvent.EVENT_MESSAGE_ON_LOST, (res: Message) => {
-      console.log('Message lost: ' + JSON.stringify(res));
+      console.log("Message lost: " + JSON.stringify(res));
 
       const text = this.strUtils.convertToString(res.content);
 
-      const index = this.messages.findIndex(item => (item.namespace === res.namespace && item.type === res.type && item.text === text));
+      const index = this.messages.findIndex(
+        (item) =>
+          item.namespace === res.namespace &&
+          item.type === res.type &&
+          item.text === text
+      );
       if (index === -1) {
-          console.log("Index not found for message: " + text);
-          return;
+        console.log("Index not found for message: " + text);
+        return;
       }
       this.messages.splice(index, 1);
       this.cd.detectChanges();
     });
 
-    this.hmsNearby.on(HMSNearbyEvent.EVENT_MESSAGE_ON_BLE_SIGNAL_CHANGED, (res: BleSignalUpdate) => {
-      console.log('Message Ble Signal Changed: ' + JSON.stringify(res));
-    });
+    this.hmsNearby.on(
+      HMSNearbyEvent.EVENT_MESSAGE_ON_BLE_SIGNAL_CHANGED,
+      (res: BleSignalUpdate) => {
+        console.log("Message Ble Signal Changed: " + JSON.stringify(res));
+      }
+    );
 
-    this.hmsNearby.on(HMSNearbyEvent.EVENT_MESSAGE_ON_DISTANCE_CHANGED, (res: DistanceUpdate) => {
-      console.log('Message Distance Changed: ' + JSON.stringify(res));
-    });
+    this.hmsNearby.on(
+      HMSNearbyEvent.EVENT_MESSAGE_ON_DISTANCE_CHANGED,
+      (res: DistanceUpdate) => {
+        console.log("Message Distance Changed: " + JSON.stringify(res));
+      }
+    );
 
-    this.hmsNearby.on(HMSNearbyEvent.EVENT_GET_ON_TIMEOUT, (res: MessageTimeout) => {
-      console.log('Get on Timeout: ' + JSON.stringify(res));
-      this.currentStatus = Status.IDLE;
-    });
+    this.hmsNearby.on(
+      HMSNearbyEvent.EVENT_GET_ON_TIMEOUT,
+      (res: MessageTimeout) => {
+        console.log("Get on Timeout: " + JSON.stringify(res));
+        this.currentStatus = Status.IDLE;
+      }
+    );
 
-    console.log('listeners added');
+    console.log("listeners added");
   }
 
   putMessage() {
     const message: Message = {
       content: this.strUtils.convertToByteArray(this.textMessage),
-      type: 'testType'
-    }
+      type: "testType",
+    };
 
     const putOption: PutOption = {
       policy: {
         distanceType: this.currentDistanceType,
         findingMode: this.currentFindingMode,
-        ttlSeconds: this.currentTtlSeconds
-      }
-    }
-    this.hmsNearby.put(message, putOption).then((res) => {
-      console.log('Message put success: ' + res);
-      this.presentToast('Message put success');
-    }).catch(e => {
-      console.log('Message put error: ' + e);
-      this.presentToast('Message put error');
-    });
+        ttlSeconds: this.currentTtlSeconds,
+      },
+    };
+    this.hmsNearby
+      .put(message, putOption)
+      .then((res) => {
+        console.log("Message put success: " + res);
+        this.presentToast("Message put success");
+      })
+      .catch((e) => {
+        console.log("Message put error: " + e);
+        this.presentToast("Message put error");
+      });
   }
 
   unputMessage() {
     const message: Message = {
       content: this.strUtils.convertToByteArray(this.textMessage),
-      type: 'testType'
-    }
-    this.hmsNearby.unput(message).then((res) => {
-      console.log('Message unput success: ' + res);
-      this.presentToast('Message unput success');
-    }).catch(e => {
-      console.log('Message unput error: ' + e);
-      this.presentToast('Message unput error');
-    });
+      type: "testType",
+    };
+    this.hmsNearby
+      .unput(message)
+      .then((res) => {
+        console.log("Message unput success: " + res);
+        this.presentToast("Message unput success");
+      })
+      .catch((e) => {
+        console.log("Message unput error: " + e);
+        this.presentToast("Message unput error");
+      });
   }
 
   getMessages() {
     this.messages = [];
     console.log("current get option: " + JSON.stringify(this.currentGetOption));
-    
-    this.hmsNearby.get(this.currentGetOption).then((res) => {
-      console.log('Message get success: ' + res);
-      this.currentStatus = Status.SEARCHING;
-    }).catch(e => {
-      console.log('Message get error: ' + e);
-      this.presentToast('Message get error');
-    });
+
+    this.hmsNearby
+      .get(this.currentGetOption)
+      .then((res) => {
+        console.log("Message get success: " + res);
+        this.currentStatus = Status.SEARCHING;
+      })
+      .catch((e) => {
+        console.log("Message get error: " + e);
+        this.presentToast("Message get error");
+      });
   }
 
   ungetMessages() {
-    this.hmsNearby.unget().then((res) => {
-      console.log('Message unget success: ' + res);
-      this.currentStatus = Status.IDLE;
-    }).catch(e => {
-      console.log('Message unget error: ' + e);
-      this.presentToast('Message unget error');
-    });
+    this.hmsNearby
+      .unget()
+      .then((res) => {
+        console.log("Message unget success: " + res);
+        this.currentStatus = Status.IDLE;
+      })
+      .catch((e) => {
+        console.log("Message unget error: " + e);
+        this.presentToast("Message unget error");
+      });
   }
 
   async presentToast(message: string) {
     const toast = await this.toastController.create({
       message: message,
-      duration: 2000
+      duration: 2000,
     });
     toast.present();
   }
-  
 }
 
 enum Status {
-  IDLE = 'Idle',
-  SEARCHING = 'Searching'
+  IDLE = "Idle",
+  SEARCHING = "Searching",
 }

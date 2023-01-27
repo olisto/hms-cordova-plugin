@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -24,9 +24,9 @@ import android.graphics.Rect;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.google.gson.Gson;
 import com.huawei.hms.common.size.Size;
 import com.huawei.hms.cordova.mlkit.providers.imageproviders.product.MLRealProductBean;
+import com.huawei.hms.mlplugin.card.icr.cn.MLCnIcrCaptureConfig;
 import com.huawei.hms.mlsdk.card.bcr.MLBankCard;
 import com.huawei.hms.mlsdk.classification.MLImageClassification;
 import com.huawei.hms.mlsdk.common.MLApplicationSetting;
@@ -39,6 +39,9 @@ import com.huawei.hms.mlsdk.face.MLFace;
 import com.huawei.hms.mlsdk.face.MLFaceKeyPoint;
 import com.huawei.hms.mlsdk.face.MLFaceShape;
 import com.huawei.hms.mlsdk.face.face3d.ML3DFace;
+import com.huawei.hms.mlsdk.faceverify.MLFaceInfo;
+import com.huawei.hms.mlsdk.faceverify.MLFaceVerificationResult;
+import com.huawei.hms.mlsdk.gesture.MLGesture;
 import com.huawei.hms.mlsdk.handkeypoint.MLHandKeypoint;
 import com.huawei.hms.mlsdk.handkeypoint.MLHandKeypoints;
 import com.huawei.hms.mlsdk.imagesuperresolution.MLImageSuperResolutionResult;
@@ -57,6 +60,8 @@ import com.huawei.hms.mlsdk.skeleton.MLSkeleton;
 import com.huawei.hms.mlsdk.text.MLText;
 import com.huawei.hms.mlsdk.text.TextLanguage;
 import com.huawei.hms.mlsdk.textimagesuperresolution.MLTextImageSuperResolution;
+
+import com.google.gson.Gson;
 
 import org.apache.cordova.CordovaInterface;
 import org.json.JSONArray;
@@ -78,19 +83,21 @@ public class TextUtils {
             map.put("retCode", mlBankCard.getRetCode());
             map.put("tipsCode", mlBankCard.getTipsCode());
             if (mlBankCard.getOriginalBitmap() != null) {
-                map.put("originalBitmap", HMSMLUtils.bitmapToBase64(mlBankCard.getOriginalBitmap()));
+                map.optString("originalBitmap", HMSMLUtils.bitmapToBase64(mlBankCard.getOriginalBitmap()));
             }
             if (mlBankCard.getNumberBitmap() != null) {
-                map.put("numberBitmap", HMSMLUtils.bitmapToBase64(mlBankCard.getNumberBitmap()));
+                map.optString("numberBitmap", HMSMLUtils.bitmapToBase64(mlBankCard.getNumberBitmap()));
             }
             return map;
         }, new JSONObject());
+
     public static final Mapper<MLTextImageSuperResolution, JSONObject> FROM_TISR_TO_JSON_OBJECT = mapperWrapper(
         (MLTextImageSuperResolution mlTextImageSuperResolution) -> {
             JSONObject map = new JSONObject();
             map.put("superBitmap", HMSMLUtils.bitmapToBase64(mlTextImageSuperResolution.getBitmap()));
             return map;
         }, new JSONObject());
+
     public static final Mapper<MLImageSegmentation, JSONObject> FROM_IMGSEG_TO_JSON_OBJECT = mapperWrapper(
         (MLImageSegmentation mlImageSegmentation) -> {
             JSONObject map = new JSONObject();
@@ -103,12 +110,14 @@ public class TextUtils {
             map.putOpt("bitmapOriginal", HMSMLUtils.bitmapToBase64(bitmapOriginal));
             return map;
         }, new JSONObject());
+
     public static final Mapper<MLImageSuperResolutionResult, JSONObject> FROM_ISR_TO_JSON_OBJECT = mapperWrapper(
         (MLImageSuperResolutionResult mlImageSuperResolutionResult) -> {
             JSONObject map = new JSONObject();
             map.put("bitmap", HMSMLUtils.bitmapToBase64(mlImageSuperResolutionResult.getBitmap()));
             return map;
         }, new JSONObject());
+
     public static final Mapper<List<MLImageClassification>, JSONObject> FROM_MLCLASS_TO_JSON_OBJECT = mapperWrapper(
         (List<MLImageClassification> mlImageClassification) -> {
             JSONObject map = new JSONObject();
@@ -125,6 +134,7 @@ public class TextUtils {
 
             return map;
         }, new JSONObject());
+
     public static final Mapper<List<MLSceneDetection>, JSONObject> FROM_MLSCEN_TO_JSON_OBJECT = mapperWrapper(
         (List<MLSceneDetection> mlSceneDetections) -> {
             JSONObject map = new JSONObject();
@@ -132,6 +142,7 @@ public class TextUtils {
             map.putOpt("result", array);
             return map;
         }, new JSONObject());
+
     public static final Mapper<List<MLSkeleton>, JSONObject> FROM_MLSKELETON_TO_JSON_OBJECT = mapperWrapper(
         (List<MLSkeleton> mlSkeletons) -> {
             JSONObject map = new JSONObject();
@@ -139,6 +150,7 @@ public class TextUtils {
             map.putOpt("result", array);
             return map;
         }, new JSONObject());
+
     public static final Mapper<List<ML3DFace>, JSONObject> FROM_ML3DFACE_TO_JSON_OBJECT = mapperWrapper(
         (List<ML3DFace> mlFace) -> {
             JSONObject map = new JSONObject();
@@ -147,7 +159,17 @@ public class TextUtils {
 
             return map;
         }, new JSONObject());
+
+    public static final Mapper<List<MLFaceVerificationResult>, JSONObject> FROM_MLFACE_VERIFICATION_TO_JSON_OBJECT
+        = mapperWrapper((List<MLFaceVerificationResult> mlFace) -> {
+        JSONObject map = new JSONObject();
+        JSONArray array = HMSMLUtils.listToJSONArray(mlFace, TextUtils::mlFaceVerificationToJSON);
+        map.putOpt("result", array);
+        return map;
+    }, new JSONObject());
+
     private static final String TAG = TextUtils.class.getSimpleName();
+
     public static final Mapper<List<MLObject>, JSONObject> FROM_MLOBJECT_TO_JSON_OBJECT = mapperWrapper(
         (List<MLObject> mlObjects) -> {
             JSONObject map = new JSONObject();
@@ -155,12 +177,14 @@ public class TextUtils {
             map.putOpt("result", array);
             return map;
         }, new JSONObject());
+
     public static final Mapper<MLText, JSONObject> FROM_MLTEXT_TO_JSON_OBJECT = mapperWrapper((MLText mlText) -> {
         JSONObject map = new JSONObject();
         map.put("stringValue", mlText.getStringValue());
         map.put("blocks", HMSMLUtils.listToJSONArray(mlText.getBlocks(), TextUtils::fromMLTextBlockToJSON));
         return map;
     }, new JSONObject());
+
     public static final Mapper<MLDocument, JSONObject> FROM_MLDOC_TO_JSON_OBJECT = mapperWrapper(
         (MLDocument mlDocument) -> {
             JSONObject map = new JSONObject();
@@ -168,6 +192,7 @@ public class TextUtils {
             map.put("blocks", HMSMLUtils.listToJSONArray(mlDocument.getBlocks(), TextUtils::fromMLDocumentBlockToJSON));
             return map;
         }, new JSONObject());
+
     public static final Mapper<List<MLFace>, JSONObject> FROM_MLFACE_TO_JSON_OBJECT = mapperWrapper(
         (List<MLFace> mlFace) -> {
             JSONObject map = new JSONObject();
@@ -176,6 +201,7 @@ public class TextUtils {
 
             return map;
         }, new JSONObject());
+
     public static final Mapper<List<MLRemoteLandmark>, JSONObject> FROM_MLREMOTELANDMARK_TO_JSON_OBJECT = mapperWrapper(
         (List<MLRemoteLandmark> mlRemoteLandmarks) -> {
             JSONObject map = new JSONObject();
@@ -184,10 +210,19 @@ public class TextUtils {
 
             return map;
         }, new JSONObject());
+
     public static final Mapper<List<MLHandKeypoints>, JSONObject> FROM_MLHAND_TO_JSON_OBJECT = mapperWrapper(
         (List<MLHandKeypoints> mlHandKeypoints) -> {
             JSONObject map = new JSONObject();
             JSONArray array = HMSMLUtils.listToJSONArray(mlHandKeypoints, TextUtils::mlHandKeypointsListTOJSON);
+            map.putOpt("result", array);
+            return map;
+        }, new JSONObject());
+
+    public static final Mapper<List<MLGesture>, JSONObject> FROM_MLGESTURE_TO_JSON_OBJECT = mapperWrapper(
+        (List<MLGesture> mlGestures) -> {
+            JSONObject map = new JSONObject();
+            JSONArray array = HMSMLUtils.listToJSONArray(mlGestures, TextUtils::mlGesturesListTOJSON);
             map.putOpt("result", array);
             return map;
         }, new JSONObject());
@@ -202,7 +237,7 @@ public class TextUtils {
         return jsonObject;
     }
 
-    //MLDocument
+    // MLDocument
     public static JSONObject fromMLDocumentToJSON(final MLDocument document) {
         JSONObject result = new JSONObject();
         try {
@@ -328,7 +363,7 @@ public class TextUtils {
         return result;
     }
 
-    //MlText
+    // MlText
     public static JSONObject fromMLTextToJSON(final MLText text) {
         JSONObject result = new JSONObject();
         try {
@@ -450,6 +485,13 @@ public class TextUtils {
         return json;
     }
 
+    public static MLCnIcrCaptureConfig.Factory xxx(final JSONObject jsonObject) {
+        final MLCnIcrCaptureConfig.Factory config = new MLCnIcrCaptureConfig.Factory();
+        config.setFront(jsonObject.optBoolean("isFlag"));
+
+        return config;
+    }
+
     public static JSONObject fromSparseArrayStillFaceAnalyseToJSON(final SparseArray<MLFace> array) {
         JSONObject json = new JSONObject();
         try {
@@ -531,6 +573,26 @@ public class TextUtils {
         jsonObject.putOpt("yaw", mlLivenessCaptureResult.getYaw());
         jsonObject.putOpt("score", mlLivenessCaptureResult.getScore());
         jsonObject.putOpt("bitmapOriginal", HMSMLUtils.bitmapToBase64(bitmapOriginal));
+        return jsonObject;
+    }
+
+    public static JSONObject mlFaceVerificationToJSON(final MLFaceVerificationResult mlFaceVerificationResult)
+        throws JSONException {
+        JSONObject faceVerificationObject = new JSONObject();
+        faceVerificationObject.putOpt("faceInfo", mlFaceVerificationResult.getFaceInfo());
+        faceVerificationObject.putOpt("similarity", mlFaceVerificationResult.getSimilarity());
+        faceVerificationObject.putOpt("templateId", mlFaceVerificationResult.getTemplateId());
+        faceVerificationObject.putOpt("faceRect", mlFaceVerificationResult.getFaceInfo().getFaceRect());
+
+        return faceVerificationObject;
+    }
+
+    public static JSONObject mlLangDetectToJSON(final MLDetectedLang detectedLang) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.putOpt("langCode", detectedLang.getLangCode());
+        jsonObject.putOpt("probability", detectedLang.getProbability());
+        jsonObject.putOpt("hashCode", detectedLang.hashCode());
+
         return jsonObject;
     }
 
@@ -684,6 +746,15 @@ public class TextUtils {
         return jsonObject;
     }
 
+    private static JSONObject handKeypointsListTOJSON(final MLHandKeypoint mlHandKeypoint) throws JSONException {
+        JSONObject handKeyPointsJSON = new JSONObject();
+        handKeyPointsJSON.putOpt("x", mlHandKeypoint.getPointX());
+        handKeyPointsJSON.putOpt("y", mlHandKeypoint.getPointY());
+        handKeyPointsJSON.putOpt("score", mlHandKeypoint.getScore());
+        handKeyPointsJSON.putOpt("type", mlHandKeypoint.getType());
+        return handKeyPointsJSON;
+    }
+
     public static JSONObject mlHandKeypointsListTOJSON(final MLHandKeypoints mlHandKeypoints) throws JSONException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.putOpt("handkeyPoints",
@@ -693,13 +764,12 @@ public class TextUtils {
         return jsonObject;
     }
 
-    private static JSONObject handKeypointsListTOJSON(final MLHandKeypoint mlHandKeypoint) throws JSONException {
-        JSONObject handKeyPointsJSON = new JSONObject();
-        handKeyPointsJSON.putOpt("x", mlHandKeypoint.getPointX());
-        handKeyPointsJSON.putOpt("y", mlHandKeypoint.getPointY());
-        handKeyPointsJSON.putOpt("score", mlHandKeypoint.getScore());
-        handKeyPointsJSON.putOpt("type", mlHandKeypoint.getType());
-        return handKeyPointsJSON;
+    public static JSONObject mlGesturesListTOJSON(final MLGesture mlGesture) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.putOpt("category", mlGesture.getCategory());
+        jsonObject.putOpt("rect", TextUtils.borderToJSON(mlGesture.getRect()));
+        jsonObject.putOpt("score", mlGesture.getScore());
+        return jsonObject;
     }
 
     public static JSONObject mlObjectsListTOJSON(final MLObject mlObject) throws JSONException {

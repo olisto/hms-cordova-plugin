@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -13,16 +13,15 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class StringUtilsService {
+  constructor() {}
 
-  constructor() { }
-
-  convertToString(bytes: number[]): string{
+  convertToString(bytes: number[]): string {
     const text = String.fromCharCode.apply(String, bytes);
     return text;
   }
@@ -31,9 +30,8 @@ export class StringUtilsService {
     var utf8 = unescape(encodeURIComponent(text));
     var arr: number[] = [];
     for (var i = 0; i < utf8.length; i++) {
-        arr.push(utf8.charCodeAt(i));
+      arr.push(utf8.charCodeAt(i));
     }
     return arr;
   }
-  
 }

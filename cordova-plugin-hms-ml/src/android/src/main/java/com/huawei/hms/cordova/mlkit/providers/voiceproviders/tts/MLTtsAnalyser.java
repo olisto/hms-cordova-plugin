@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -45,9 +45,13 @@ import org.json.JSONObject;
 
 public class MLTtsAnalyser extends HMSProvider {
     private static final String TAG = MLTtsAnalyser.class.getSimpleName();
+
     private CallbackContext callbackContext;
+
     private MLTtsEngine mlTtsEngine;
+
     private MLTtsConfig mlConfigs;
+
     private MLTtsLocalModel model;
 
     private MLTtsCallback callback = new MLTtsCallback() {
@@ -156,12 +160,12 @@ public class MLTtsAnalyser extends HMSProvider {
                     .setPerson("Female-en")
                     .setSpeed(1.0f)
                     .setVolume(1.0f);
-
             }
             try {
                 mlTtsEngine = new MLTtsEngine(mlConfigs);
                 mlTtsEngine.setTtsCallback(callback);
                 mlTtsEngine.speak(text, queuingMode);
+
             } catch (Exception e) {
                 MLException mlException = (MLException) e;
                 Log.i(TAG, "TTs:" + mlException.getMessage());
@@ -170,7 +174,6 @@ public class MLTtsAnalyser extends HMSProvider {
         } else {
             callbackContext.error("Illegal argument");
             HMSLogger.getInstance(getContext()).sendSingleEvent("ttsAnalyser", "-1");
-
         }
 
     }
@@ -185,6 +188,17 @@ public class MLTtsAnalyser extends HMSProvider {
             return false;
         }
         return true;
+    }
+
+    public void setPlayerVolume(CallbackContext context, JSONObject params) throws JSONException {
+        int volume = params.getInt("playerVolume");
+        if (mlTtsEngine == null) {
+            callbackContext.error(CordovaErrors.toErrorJSON(CordovaErrors.ILLEGAL_PARAMETER));
+            return;
+        }
+        HMSLogger.getInstance(getContext()).sendSingleEvent("ttsAnalyserSetVolume");
+        mlTtsEngine.setPlayerVolume(volume);
+
     }
 
     public void stopTTSAnalyser(final CallbackContext callbackContext, final CordovaInterface cordovaInterface) {
@@ -302,6 +316,8 @@ public class MLTtsAnalyser extends HMSProvider {
                 .sendSingleEvent("ttsAnalyserShutDown", String.valueOf(CordovaErrors.ANALYSIS_FAILURE));
         } else {
             mlTtsEngine.shutdown();
+            mlTtsEngine = null;
+            mlConfigs = null;
             HMSLogger.getInstance(getContext()).sendSingleEvent("ttsAnalyserShutDown");
         }
     }

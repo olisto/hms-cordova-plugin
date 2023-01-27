@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -14,18 +14,15 @@
     limitations under the License.
 */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
 
 @Component({
-  selector: 'app-custom-uri',
-  templateUrl: './custom-uri.page.html',
-  styleUrls: ['./custom-uri.page.scss'],
+  selector: "app-custom-uri",
+  templateUrl: "./custom-uri.page.html",
+  styleUrls: ["./custom-uri.page.scss"],
 })
 export class CustomURIPage implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

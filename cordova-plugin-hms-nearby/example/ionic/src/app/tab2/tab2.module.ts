@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -13,22 +13,17 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-import { IonicModule } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Tab2Page } from './tab2.page';
+import { IonicModule } from "@ionic/angular";
+import { RouterModule } from "@angular/router";
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Tab2Page } from "./tab2.page";
 
-import { Tab2PageRoutingModule } from './tab2-routing.module';
+import { Tab2PageRoutingModule } from "./tab2-routing.module";
 
 @NgModule({
-  imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
-    Tab2PageRoutingModule
-  ],
-  declarations: [Tab2Page]
+  imports: [IonicModule, CommonModule, FormsModule, Tab2PageRoutingModule],
+  declarations: [Tab2Page],
 })
 export class Tab2PageModule {}

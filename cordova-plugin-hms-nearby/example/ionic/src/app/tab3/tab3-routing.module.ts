@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -13,19 +13,19 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { Tab3Page } from './tab3.page';
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
+import { Tab3Page } from "./tab3.page";
 
 const routes: Routes = [
   {
-    path: '',
+    path: "",
     component: Tab3Page,
-  }
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class Tab3PageRoutingModule {}

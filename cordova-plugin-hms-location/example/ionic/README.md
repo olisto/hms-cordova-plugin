@@ -4,9 +4,9 @@
 
 - [1. Introduction](#1-introduction)
 - [2. Installation Guide](#2-installation-guide)
-   - [2.1. Ionic](#21-ionic)
-      - [2.1.1. With Cordova Runtime](#211-with-cordova-runtime)
-      - [2.1.2. With Capacitor Runtime](#212-with-capacitor-runtime)
+    - [2.1. Ionic](#21-ionic)
+        - [2.1.1. With Cordova Runtime](#211-with-cordova-runtime)
+        - [2.1.2. With Capacitor Runtime](#212-with-capacitor-runtime)
 - [3. Configuration and Description](#3-configuration-and-description)
 - [4. Questions or Issues](#4-questions-or-issues)
 - [5. Licencing and Terms](#5-licencing-and-terms)
@@ -89,7 +89,9 @@ This demo application demonstrates the usage of HMS Location Cordova plugin.
     npx cap init [appName] [appId]
     ```
 
-   - For more details please follow [Initialize Capacitor with your app information](https://capacitorjs.com/docs/getting-started/with-ionic#initialize-capacitor-with-your-app-information).
+    - For more details please
+      follow [Initialize Capacitor with your app information](https://capacitorjs.com/docs/getting-started/with-ionic#initialize-capacitor-with-your-app-information)
+      .
 
 3. Install `HMS Location plugin` to the project.
 
@@ -121,7 +123,8 @@ This demo application demonstrates the usage of HMS Location Cordova plugin.
     npx cap sync
     ```
 
-8. Open the **`build.gradle`** file in the **`<project_root>/android`** directory. Add **Huawei's maven repositories**.
+8. Open the **`build.gradle`** file in the **`<project_root>/android`** directory. Add **Huawei's
+   maven repositories**.
 
     ```groovy
     buildscript {
@@ -130,6 +133,12 @@ This demo application demonstrates the usage of HMS Location Cordova plugin.
                 <Other repositories>
             */
             maven { url 'https://developer.huawei.com/repo/' }
+        }
+        dependencies {
+            /*
+                <Other dependencies>
+            */
+            classpath 'com.huawei.agconnect:agcp:1.6.1.300'
         }
     }
 
@@ -163,16 +172,23 @@ This demo application demonstrates the usage of HMS Location Cordova plugin.
 
 If you have questions about how to use HMS samples, try the following options:
 
-- [Stack Overflow](https://stackoverflow.com/questions/tagged/huawei-mobile-services) is the best place for any programming questions. Be sure to tag your question with **`huawei-mobile-services`**.
-- [GitHub](https://github.com/HMS-Core/hms-cordova-plugin) is the official repository for these plugins, You can open an issue or submit your ideas.
-- [Huawei Developer Forum](https://forums.developer.huawei.com/forumPortal/en/home?fid=0101187876626530001&ha_source=hms1) HMS Core Module is great for general questions, or seeking recommendations and opinions.
-- [Huawei Developer Docs](https://developer.huawei.com/consumer/en/doc/overview/HMS-Core-Plugin?ha_source=hms1) is place to official documentation for all HMS Core Kits, you can find detailed documentations in there.
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/huawei-mobile-services) is the best
+  place for any programming questions. Be sure to tag your question
+  with **`huawei-mobile-services`**.
+- [GitHub](https://github.com/HMS-Core/hms-cordova-plugin) is the official repository for these
+  plugins, You can open an issue or submit your ideas.
+- [Huawei Developer Forum](https://forums.developer.huawei.com/forumPortal/en/home?fid=0101187876626530001&ha_source=hms1)
+  HMS Core Module is great for general questions, or seeking recommendations and opinions.
+- [Huawei Developer Docs](https://developer.huawei.com/consumer/en/doc/overview/HMS-Core-Plugin?ha_source=hms1)
+  is place to official documentation for all HMS Core Kits, you can find detailed documentations in
+  there.
 
-If you run into a bug in our samples, please submit an issue to the [GitHub repository](https://github.com/HMS-Core/hms-cordova-plugin).
+If you run into a bug in our samples, please submit an issue to
+the [GitHub repository](https://github.com/HMS-Core/hms-cordova-plugin).
 
 ---
 
 ## 5. Licencing and Terms
 
-HMS Location Cordova Plugin is licensed under the [Apache 2.0 license](LICENCE).
+HMS Location Cordova Plugin is licensed under the [Apache 2.0 license](LICENSE).
 

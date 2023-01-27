@@ -1,5 +1,5 @@
 /*
-Copyright 2020. Huawei Technologies Co., Ltd. All rights reserved.
+Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,38 +19,39 @@ document.addEventListener('deviceready', () => checkEnvironmentReady(), false);
 const DEVELOPERPAYLOAD = "HMSCoreDeveloper"
 const DEVELOPERCHALLENGE = "HMSCoreDeveloperChallenge"
 const PRICETYPE = {
-    CONSUMABLE : 0,
-    NONCONSUMABLE : 1,
-    SUBSCRIPTION : 2,
+    CONSUMABLE: 0,
+    NONCONSUMABLE: 1,
+    SUBSCRIPTION: 2,
 }
 
 const PRODUCTS = {
     consumable: {
-      type: PRICETYPE.CONSUMABLE,
-      products: [{
-        id: 'test',
-        name: 'Consumable Item'
-      }]
+        type: PRICETYPE.CONSUMABLE,
+        products: [{
+            id: '<YOUR_PRODUCT_ID>',
+            name: '<YOUR_PRODUCT_NAME>'
+        }]
     },
     nonconsumable: {
-      type: PRICETYPE.NONCONSUMABLE,
-      products: [{
-        id: 'non_consumable_item_1',
-        name: 'Non Consumable Item'
-      },]
+        type: PRICETYPE.NONCONSUMABLE,
+        products: [{
+            id: '<YOUR_PRODUCT_ID>',
+            name: '<YOUR_PRODUCT_NAME>'
+        },]
     },
     subscription: {
-      type: PRICETYPE.SUBSCRIPTION,
-      products: [{
-        id: 'subscription_item_1',
-        name: 'Subscription Item'
-      },]
+        type: PRICETYPE.SUBSCRIPTION,
+        products: [{
+            id: '<YOUR_PRODUCT_ID>',
+            name: '<YOUR_PRODUCT_NAME>'
+        },]
     },
-  }
+}
 
-const getProduct = (productId, productType)=>{
-    const pList = PRODUCTS[productType].products.filter(p=>p.id===productId)
-    return pList.length>0 ? pList[0] : {id:'id', name:'name'}
+
+const getProduct = (productId, productType) => {
+    const pList = PRODUCTS[productType].products.filter(p => p.id === productId)
+    return pList.length > 0 ? pList[0] : { id: 'id', name: 'name' }
 }
 
 function defaultErrorHandler(message) {
@@ -58,7 +59,7 @@ function defaultErrorHandler(message) {
     alert("Error: " + JSON.stringify(message, null, 4));
 }
 
-const createAvailableProductOnList = (product, productType)=>{
+const createAvailableProductOnList = (product, productType) => {
     var listNode = document.getElementById(`list-${productType}-available`);
     var productEl = createElementFromHTML(
         `<li id='${productType}-${product.productId}-available'>
@@ -75,7 +76,7 @@ const createAvailableProductOnList = (product, productType)=>{
     listNode.appendChild(productEl)
 }
 
-const createPurchasedProductOnList = (productId, purchaseData, productType)=>{
+const createPurchasedProductOnList = (productId, purchaseData, productType) => {
     const product = getProduct(productId, productType)
     var listNode = document.getElementById(`list-${productType}-purchased`);
     var productEl = createElementFromHTML(
@@ -91,7 +92,7 @@ const createPurchasedProductOnList = (productId, purchaseData, productType)=>{
     listNode.appendChild(productEl)
 }
 
-const createPurchasedRecordProductOnList = (productId, productType)=>{
+const createPurchasedRecordProductOnList = (productId, productType) => {
     const product = getProduct(productId, productType)
     var listNode = document.getElementById(`list-${productType}-purchased-record`);
     var productEl = createElementFromHTML(
@@ -99,7 +100,7 @@ const createPurchasedRecordProductOnList = (productId, productType)=>{
             <div class="title">${product.name}</div>
         </li>`
     );
-    productEl.onclick = ()=>{
+    productEl.onclick = () => {
         console.log(product)
     }
     listNode.appendChild(productEl)
@@ -113,7 +114,7 @@ const createPurchaseIntent = async (product, productType) => {
             developerPayload: DEVELOPERPAYLOAD
         });
 
-        console.log(message);
+        console.log(JSON.stringify(message, ["returnCode", "errMsg", "inAppPurchaseData", "inAppDataSignature", "signatureAlgorithm"]));
 
         if (message.returnCode === 0) {// if successful
             createPurchasedProductOnList(product.productId, message.inAppPurchaseData, productType)
@@ -149,22 +150,22 @@ const obtainProductInfoFromType = async (pType) => {
     try {
         let message = await HMSInAppPurchases.obtainProductInfo({
             priceType: PRODUCTS[pType].type,
-            productList: PRODUCTS[pType].products.map(p=>p.id)
+            productList: PRODUCTS[pType].products.map(p => p.id)
         });
         console.log(message);
-        message.productInfoList.map(p=>createAvailableProductOnList(p, pType))
+        message.productInfoList.map(p => createAvailableProductOnList(p, pType))
     } catch (err) {
         defaultErrorHandler(err);
     }
 }
 
-const obtainOwnedPurchasesFromType = async (pType)=> {
+const obtainOwnedPurchasesFromType = async (pType) => {
     try {
         let message = await HMSInAppPurchases.obtainOwnedPurchases({
             priceType: PRODUCTS[pType].type
         });
         console.log(message);
-        message.itemList.map((pId,ind)=>createPurchasedProductOnList(pId, message.inAppPurchaseDataList[ind], pType))
+        message.itemList.map((pId, ind) => createPurchasedProductOnList(pId, message.inAppPurchaseDataList[ind], pType))
     } catch (err) {
         defaultErrorHandler(err);
     }
@@ -175,19 +176,18 @@ const obtainOwnedPurchaseRecordFromType = async (pType) => {
         let message = await HMSInAppPurchases.obtainOwnedPurchaseRecord({
             priceType: PRODUCTS[pType].type
         });
-        console.log(message);
-        message.itemList.map(pId=>createPurchasedRecordProductOnList(pId, pType))
+        message.itemList.map(pId => createPurchasedRecordProductOnList(pId, pType))
     } catch (err) {
         defaultErrorHandler(err);
     }
 }
 
 
-const getProductsInformation = () =>{
+const getProductsInformation = () => {
     Object.keys(PRODUCTS).map(async pType => {
         await obtainProductInfoFromType(pType)
         await obtainOwnedPurchasesFromType(pType)
-        if (pType ==='consumable' || pType ==='subscription') {
+        if (pType === 'consumable' || pType === 'subscription') {
             await obtainOwnedPurchaseRecordFromType(pType)
         }
     })
@@ -196,18 +196,19 @@ const getProductsInformation = () =>{
 
 const checkEnvironmentReady = async () => {
     try {
-        let message = await HMSInAppPurchases.isEnvReady();
+        let message = await HMSInAppPurchases.isEnvReady(true);
         console.log(message);
         let sandbox = await HMSInAppPurchases.isSandboxActivated();
         console.log(sandbox);
         getProductsInformation()
-        alert("Success(HMSInAppPurchases.isEnvReady): " + JSON.stringify(message, null, 4));
+        alert("Success(HMSInAppPurchases.isEnvReady):" + JSON.stringify(message, null, 4));
     } catch (errMsg) {
         console.log(errMsg);
-        alert("Error(HMSInAppPurchases.isEnvReady): " +errMsg+ + JSON.stringify(errMsg, null, 4));
+        alert("Error(HMSInAppPurchases.isEnvReady): " + errMsg + + JSON.stringify(errMsg, null, 4));
         checkEnvironmentReady()
     }
 }
+
 
 //
 // Utility

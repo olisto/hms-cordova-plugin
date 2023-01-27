@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import android.util.Log;
 import com.huawei.hms.cordova.mlkit.helpers.CordovaHelpers;
 import com.huawei.hms.cordova.mlkit.logger.HMSLogger;
 import com.huawei.hms.cordova.mlkit.providers.facebodyproviders.face.MLStillFaceAnalyser;
+import com.huawei.hms.cordova.mlkit.providers.facebodyproviders.faceverification.MLStillFaceVerificationAnalyser;
+import com.huawei.hms.cordova.mlkit.providers.facebodyproviders.gesture.MLStillGestureAnalyser;
 import com.huawei.hms.cordova.mlkit.providers.facebodyproviders.handkeypoint.MLStillHandKeypointAnalyser;
 import com.huawei.hms.cordova.mlkit.providers.facebodyproviders.livenessdetection.MLLivenessDetectionAnalyser;
 import com.huawei.hms.cordova.mlkit.providers.facebodyproviders.skeleton.MLStillSkeletonAnalyser;
@@ -37,11 +39,20 @@ import java.io.IOException;
 public class HMSFaceBodyProvider extends CordovaPlugin {
 
     public static final String TAG = HMSFaceBodyProvider.class.getSimpleName();
+
     private PermissionUtils permissionUtils = new PermissionUtils();
+
     private MLLivenessDetectionAnalyser liveLivenessDetection;
+
     private MLStillHandKeypointAnalyser stillHandKeyPointAnalyse;
+
     private MLStillSkeletonAnalyser stillSkeletonAnalyse;
+
     private MLStillFaceAnalyser stillFaceAnalyse;
+
+    private MLStillGestureAnalyser stillGestureAnalyser;
+
+    private MLStillFaceVerificationAnalyser faceVerificationAnalyser;
 
     public void pluginInitialize() {
         stillFaceAnalyse = CordovaHelpers.initializeProvider(new MLStillFaceAnalyser(cordova.getContext()), cordova,
@@ -52,9 +63,10 @@ public class HMSFaceBodyProvider extends CordovaPlugin {
             new MLStillHandKeypointAnalyser(cordova.getContext()), cordova, this);
         stillSkeletonAnalyse = CordovaHelpers.initializeProvider(new MLStillSkeletonAnalyser(cordova.getContext()),
             cordova, this);
-        stillSkeletonAnalyse = CordovaHelpers.initializeProvider(new MLStillSkeletonAnalyser(cordova.getContext()),
+        stillGestureAnalyser = CordovaHelpers.initializeProvider(new MLStillGestureAnalyser(cordova.getContext()),
             cordova, this);
-
+        faceVerificationAnalyser = CordovaHelpers.initializeProvider(
+            new MLStillFaceVerificationAnalyser(cordova.getContext()), cordova, this);
     }
 
     public boolean execute(final String action, final JSONArray args, final CallbackContext callbackContext) {
@@ -94,6 +106,38 @@ public class HMSFaceBodyProvider extends CordovaPlugin {
                         });
                         return true;
                     }
+                    case "ACTION_STILL_GESTURE_ANALYSE": {
+                        cordova.getThreadPool().execute(() -> {
+                            HMSLogger.getInstance(cordova.getContext())
+                                .startMethodExecutionTimer("stillGestureAnalyse");
+                            try {
+                                stillGestureAnalyser.initializeStillGestureAnalyser(params, callbackContext);
+                            } catch (JSONException e) {
+                                Log.e(TAG, "initializer: ->ACTION_STILL_GESTURE_ANALYSE ->" + e.getMessage());
+                            }
+                        });
+                        return true;
+                    }
+                    case "ACTION_STILL_GESTURE_ANALYSE_STOP": {
+                        cordova.getThreadPool().execute(() -> {
+                            HMSLogger.getInstance(cordova.getContext())
+                                .startMethodExecutionTimer("stillGestureAnalyseStop");
+                            stillGestureAnalyser.stopGestureAnalyser(callbackContext);
+                        });
+                        return true;
+                    }
+                    case "ACTION_STILL_GESTURE_ANALYSE_SETTING": {
+                        cordova.getThreadPool().execute(() -> {
+                            HMSLogger.getInstance(cordova.getContext())
+                                .startMethodExecutionTimer("stillGestureAnalyseSetting");
+                            try {
+                                stillGestureAnalyser.getGestureAnalyserSetting(callbackContext);
+                            } catch (JSONException e) {
+                                Log.e(TAG, "StillGestureAnalyseSetting" + e.getMessage());
+                            }
+                        });
+                        return true;
+                    }
                     case "ACTION_STILL_HANDKEYPOINT_ANALYSE": {
                         cordova.getThreadPool().execute(() -> {
                             HMSLogger.getInstance(cordova.getContext())
@@ -121,11 +165,52 @@ public class HMSFaceBodyProvider extends CordovaPlugin {
                             try {
                                 stillHandKeyPointAnalyse.getHandKeypointSetting(callbackContext);
                             } catch (JSONException e) {
-                                Log.e(TAG, "" + e.getMessage());
+                                Log.e(TAG, " stillHandKeypointSetting" + e.getMessage());
                             }
                         });
                         return true;
                     }
+                    case "ACTION_STILL_FACE_VERIFICATION": {
+                        cordova.getThreadPool().execute(() -> {
+                            HMSLogger.getInstance(cordova.getContext())
+                                .startMethodExecutionTimer("stillFaceVerification");
+                            try {
+                                faceVerificationAnalyser.initializeFaceVerification(params, callbackContext);
+                            } catch (JSONException e) {
+                                Log.e(TAG, "initializer: ACTION_STILL_FACE_VERIFICATION ->" + e.getMessage());
+                            }
+                        });
+                        return true;
+                    }
+                    case "ACTION_STOP_STILL_FACE_VERIFICATION": {
+                        cordova.getThreadPool().execute(() -> {
+                            HMSLogger.getInstance(cordova.getContext())
+                                .startMethodExecutionTimer("stillFaceVerificationAnalyseStop");
+                            faceVerificationAnalyser.stopStillFaceVerificationAnalyser(callbackContext);
+                        });
+                        return true;
+                    }
+                    case "ACTION_STILL_FACE_VERIFICATION_ANALYSE_SETTING": {
+                        cordova.getThreadPool().execute(() -> {
+                            HMSLogger.getInstance(cordova.getContext())
+                                .startMethodExecutionTimer("stillFaceVerificationAnalyserSetting");
+                            try {
+                                faceVerificationAnalyser.getFaceVerificationAnalyserSetting(callbackContext);
+                            } catch (JSONException e) {
+                                Log.e(TAG,
+                                    "initializer : ACTION_STILL_FACE_VERIFICATION_ANALYSE_SETTING " + e.getMessage());
+                            }
+                        });
+                        return true;
+                    }
+                    case "ACTION_STILL_FACE_VERIFICATION_FACEDETECTED":
+                        HMSLogger.getInstance(cordova.getContext()).startMethodExecutionTimer("stillFace");
+                        try {
+                            faceVerificationAnalyser.setFaceDetected(params, callbackContext);
+                        } catch (JSONException e) {
+                            Log.e(TAG, "StillFaceVerificationDetected" + e.getMessage());
+                        }
+                        return true;
                     case "ACTION_STILL_FACE_ANALYSER": {
                         cordova.getThreadPool().execute(() -> {
                             HMSLogger.getInstance(cordova.getContext()).startMethodExecutionTimer("stillFaceAnalyser");
@@ -140,7 +225,7 @@ public class HMSFaceBodyProvider extends CordovaPlugin {
                             try {
                                 stillFaceAnalyse.getAnalyzerSetting(callbackContext);
                             } catch (JSONException e) {
-                                Log.e(TAG, "" + e.getMessage());
+                                Log.e(TAG, "stillFaceVerificationAnalyser Setting" + e.getMessage());
                             }
                         });
                         return true;

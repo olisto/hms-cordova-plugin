@@ -1,5 +1,6 @@
+"use strict";
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -13,8 +14,6 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-"use strict";
-
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -25,7 +24,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MapStyleOptions = exports.CameraUpdateFactory = exports.enableLogger = exports.disableLogger = exports.setApiKey = exports.computeDistanceBetween = exports.requestPermission = exports.hasPermission = exports.showMap = exports.getMap = exports.sync = exports.maps = exports.AnimationConstant = exports.TileType = exports.PatternItemType = exports.Hue = exports.JointType = exports.MapEvent = exports.MapType = exports.Color = exports.CameraMoveStartedReason = exports.ErrorCodes = exports.InterpolatorType = exports.AnimationSet = exports.Cap = exports.SquareCap = exports.RoundCap = exports.CustomCap = exports.ButtCap = void 0;
+exports.MapStyleOptions = exports.CameraUpdateFactory = exports.enableLogger = exports.disableLogger = exports.setApiKey = exports.computeDistanceBetween = exports.requestPermission = exports.hasPermission = exports.showMap = exports.getMap = exports.sync = exports.maps = void 0;
 const utils_1 = require("./utils");
 const interfaces_1 = require("./interfaces");
 const circle_1 = require("./circle");
@@ -53,6 +52,7 @@ Object.defineProperty(exports, "Hue", { enumerable: true, get: function () { ret
 Object.defineProperty(exports, "PatternItemType", { enumerable: true, get: function () { return interfaces_2.PatternItemType; } });
 Object.defineProperty(exports, "TileType", { enumerable: true, get: function () { return interfaces_2.TileType; } });
 Object.defineProperty(exports, "AnimationConstant", { enumerable: true, get: function () { return interfaces_2.AnimationConstant; } });
+Object.defineProperty(exports, "Gravity", { enumerable: true, get: function () { return interfaces_2.Gravity; } });
 exports.maps = new Map();
 function sync(mapId, mapDiv, components) {
     if (!exports.maps.has(mapId)) {
@@ -352,8 +352,8 @@ class HuaweiMapImpl {
             const fixedFunctionNameForJava = `set${event[0].toUpperCase()}${event.substr(1)}Listener`;
             return utils_1.asyncExec('HMSMap', 'mapOptions', [this.divId, 'setListener', fixedFunctionNameForJava, { 'content': callback.toString() }])
                 .then(value => {
-                window.subscribeHMSEvent(fixedFunctionNameForJavaScript, callback);
-            }).catch(err => console.log(err));
+                    window.subscribeHMSEvent(fixedFunctionNameForJavaScript, callback);
+                }).catch(err => console.log(err));
         });
     }
     setMapPointersEnabled(mapPointersEnabled) {
@@ -526,6 +526,12 @@ class HuaweiMapImpl {
     setPointToCenter(x, y) {
         return this.setHuaweiMapOptions('setPointToCenter', { 'x': x, 'y': y });
     }
+    setStyleId(styleId) {
+        return this.setHuaweiMapOptions('setStyleId', { 'styleId': styleId });
+    }
+    previewId(previewId) {
+        return this.setHuaweiMapOptions('previewId', { 'previewId': previewId });
+    }
     getComponent(key) {
         return this.components.get(key);
     }
@@ -635,6 +641,12 @@ class UiSettingsImpl {
     }
     setMarkerClusterTextColor(markerClusterTextColor) {
         return this.setUiSettings('setMarkerClusterTextColor', { 'markerClusterTextColor': markerClusterTextColor });
+    }
+    setLogoPosition(logoPosition) {
+        return this.setUiSettings('setLogoPosition', { 'logoPosition': logoPosition });
+    }
+    setLogoPadding(paddingStart, paddingTop, paddingEnd, paddingBottom) {
+        return this.setUiSettings('setLogoPadding', { 'paddingStart': paddingStart, 'paddingTop': paddingTop, 'paddingEnd': paddingEnd, 'paddingBottom': paddingBottom });
     }
     setUiSettings(func, props) {
         return utils_1.asyncExec('HMSMap', 'mapOptions', [this.mapDivId, 'setUiSettings', func, props]);

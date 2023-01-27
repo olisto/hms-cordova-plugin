@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -13,21 +13,30 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 import {
-  HMSSite, SearchService, SearchServiceFactory,
-  TextSearchRequest, TextSearchResponse,
-  NearbySearchRequest, NearbySearchResponse,
-  DetailSearchRequest, DetailSearchResponse,
-  QueryAutocompleteRequest, QueryAutocompleteResponse,
-  QuerySuggestionRequest, QuerySuggestionResponse,
-  SearchFilter, LocationType, HwLocationType
-} from '@hmscore/ionic-native-hms-site/ngx';
+  HMSSite,
+  SearchService,
+  SearchServiceFactory,
+  TextSearchRequest,
+  TextSearchResponse,
+  NearbySearchRequest,
+  NearbySearchResponse,
+  DetailSearchRequest,
+  DetailSearchResponse,
+  QueryAutocompleteRequest,
+  QueryAutocompleteResponse,
+  QuerySuggestionRequest,
+  QuerySuggestionResponse,
+  SearchFilter,
+  LocationType,
+  HwLocationType,
+} from "@hmscore/ionic-native-hms-site/ngx";
 
 @Component({
-  selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  selector: "app-home",
+  templateUrl: "home.page.html",
+  styleUrls: ["home.page.scss"],
 })
 export class HomePage {
   private searchService: SearchService = null;
@@ -35,14 +44,14 @@ export class HomePage {
 
   constructor(private site: HMSSite) {
     SearchServiceFactory.create(this.apiKey)
-      .then(service => this.searchService = service)
-      .catch(err => alert('An error occurred.'));
+      .then((service) => (this.searchService = service))
+      .catch((err) => alert("An error occurred."));
   }
 
   async textSearch() {
     const textSearchReq: TextSearchRequest = {
       children: false,
-      query: 'Paris',
+      query: "Paris",
       location: {
         lat: 48.89,
         lng: 2.33,
@@ -53,9 +62,11 @@ export class HomePage {
       countryCode: "FR",
       language: "fr",
       pageIndex: 1,
-      pageSize: 5
+      pageSize: 5,
     };
-    const response: TextSearchResponse = await this.searchService.textSearch(textSearchReq);
+    const response: TextSearchResponse = await this.searchService.textSearch(
+      textSearchReq
+    );
     this.log(response);
   }
   async nearbySearch() {
@@ -70,30 +81,33 @@ export class HomePage {
       hwPoiType: HwLocationType.ADDRESS,
       language: "fr",
       pageIndex: 1,
-      pageSize: 5
+      pageSize: 5,
     };
-    const response: NearbySearchResponse = await this.searchService.nearbySearch(nearbySearchReq);
+    const response: NearbySearchResponse =
+      await this.searchService.nearbySearch(nearbySearchReq);
     this.log(response);
   }
   async detailSearch() {
     const detailSearchReq: DetailSearchRequest = {
-      siteId: '16DA89C6962A36CB1752A343ED48B78A',
-      language: 'fr'
+      siteId: "554037148278850176",
+      language: "fr",
     };
-    const response: DetailSearchResponse = await this.searchService.detailSearch(detailSearchReq);
+    const response: DetailSearchResponse =
+      await this.searchService.detailSearch(detailSearchReq);
     this.log(response);
   }
   async queryAutocomplete() {
     const queryAutocompleteReq: QueryAutocompleteRequest = {
-      query: 'Paris',
+      query: "Paris",
       location: {
         lat: 48.89,
-        lng: 2.33
+        lng: 2.33,
       },
       radius: 1000,
-      children: false
+      children: false,
     };
-    const response: QueryAutocompleteResponse = await this.searchService.queryAutocomplete(queryAutocompleteReq);
+    const response: QueryAutocompleteResponse =
+      await this.searchService.queryAutocomplete(queryAutocompleteReq);
     this.log(response);
   }
   async querySuggestion() {
@@ -108,39 +122,44 @@ export class HomePage {
       countryCode: "FR",
       language: "fr",
     };
-    const response: QuerySuggestionResponse = await this.searchService.querySuggestion(querySuggestionReq);
+    const response: QuerySuggestionResponse =
+      await this.searchService.querySuggestion(querySuggestionReq);
     this.log(response);
   }
   async gotoActivity() {
     const searchFilter: SearchFilter = {
-      query: 'Paris',
+      query: "Paris",
       location: {
         lat: 48.89,
-        lng: 2.33
+        lng: 2.33,
       },
       bounds: {
         northeast: {
           lat: 48.85,
-          lng: 2.33
+          lng: 2.33,
         },
         southwest: {
           lat: 48.85,
-          lng: 2.34
+          lng: 2.34,
         },
       },
       radius: 1000,
       poiType: [LocationType.ADDRESS, LocationType.GEOCODE],
-      countryCode: 'FR',
-      language: 'fr'
+      countryCode: "FR",
+      language: "fr",
     };
-    const hint = 'Search place';
-    const result = await this.site.gotoSearchActivity(this.apiKey, searchFilter, hint);
+    const hint = "Search place";
+    const result = await this.site.gotoSearchActivity(
+      this.apiKey,
+      searchFilter,
+      hint
+    );
     this.log(result);
   }
 
   private log(response: any): void {
-    const logDiv = document.getElementById('logger');
-    response = JSON.parse(JSON.stringify(response).replace('NaN', '0'));
+    const logDiv = document.getElementById("logger");
+    response = JSON.parse(JSON.stringify(response).replace("NaN", "0"));
     console.log(response);
     logDiv.innerHTML = JSON.stringify(JSON.parse(response), undefined, 2);
   }

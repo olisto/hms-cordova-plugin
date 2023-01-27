@@ -20,29 +20,29 @@ This demo application demonstrates the usage of the HMS Site Kit Cordova plugin.
 
 1. Install Cordova CLI if haven't done before.
 
-    ```bash
-    npm install -g cordova
-    ```
+   ```bash
+   npm install -g cordova
+   ```
 
 2. Open the demo project's root folder.
 
 3. Add the **Android platform** to the project if haven't done before.
 
-    ```bash
-    cordova platform add android
-    ```
+   ```bash
+   cordova platform add android
+   ```
 
 4. Install `HMS Site plugin` to the project.
 
-    ```bash
-    cordova plugin add @hmscore/cordova-plugin-hms-site
-    ```
+   ```bash
+   cordova plugin add @hmscore/cordova-plugin-hms-site
+   ```
 
 5. Run the app.
 
-    ```bash
-    cordova run android --device
-    ```
+   ```bash
+   cordova run android --device
+   ```
 
 ---
 
@@ -88,4 +88,4 @@ If you run into a bug in our samples, please submit an issue to the [GitHub repo
 
 ## 5. Licensing and Terms
 
-Huawei Site Kit Cordova Plugin is licensed under the [Apache 2.0 license](LICENCE).
+Huawei Site Kit Cordova Plugin is licensed under the [Apache 2.0 license](LICENSE).

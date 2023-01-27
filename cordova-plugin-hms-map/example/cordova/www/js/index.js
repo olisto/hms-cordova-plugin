@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ async function addMarkerAnim(){
     await marker.startAnimation();
 }
 async function initMap(){
-    let mapOptions = {"cameraPosition": {"target": {"lat": 40.7587658, "lng": 30.3146964}, "zoom": 2}};
+    let mapOptions = {"mapType": HMSMap.MapType.MAP_TYPE_TERRAIN, "cameraPosition": {"target": {"lat": 40.7587658, "lng": 30.3146964}, "zoom": 2}};
     map = await HMSMap.getMap("map", mapOptions,{});
     addListener();
     await map.getUiSettings().setMyLocationButtonEnabled(true);

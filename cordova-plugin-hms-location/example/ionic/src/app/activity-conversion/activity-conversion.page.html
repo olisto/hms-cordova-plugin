@@ -1,5 +1,5 @@
 <!--
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -27,13 +27,6 @@
 </ion-header>
 
 <ion-content>
-    <button (click)="requestActivityIdentificationPermission()" class="btn btn-primary btn-lg btn-block"
-            id="requestActivityIdentificationPermission"
-            type="button">Request Permissions
-    </button>
-    <button (click)="hasPermission()" class="btn btn-primary btn-lg btn-block" id="hasPermission" type="button">Has
-        Permission
-    </button>
     <div class="input-group mt-3">
         <div class="input-group-prepend">
             <label class="input-group-text" for="conversionTypeSelect">conversionType</label>
@@ -57,7 +50,8 @@
             <option value="108">RUNNING</option>
         </select>
     </div>
-    <button (click)="addToList()" class="btn btn-primary btn-lg btn-block" id="addToList" type="button">Add To List
+    <button (click)="addToList()" class="btn btn-primary btn-lg btn-block" id="addToList"
+            type="button">Add To List
     </button>
     <div style="width:100%;height:10vh;background-color:#e5e7e9;overflow:scroll;">
         <label id="conversionListLog" style="margin:0px;label:0px;"></label>

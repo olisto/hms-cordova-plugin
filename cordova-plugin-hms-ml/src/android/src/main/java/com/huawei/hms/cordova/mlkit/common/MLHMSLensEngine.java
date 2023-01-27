@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import com.huawei.hms.cordova.mlkit.interfaces.HMSProvider;
 import com.huawei.hms.cordova.mlkit.logger.HMSLogger;
 import com.huawei.hms.cordova.mlkit.transactors.Face3DAnalyzerTransactor;
 import com.huawei.hms.cordova.mlkit.transactors.FaceAnalyzerTransactor;
+import com.huawei.hms.cordova.mlkit.transactors.GestureAnalyzerTransactor;
 import com.huawei.hms.cordova.mlkit.transactors.HandAnalyzerTransactor;
 import com.huawei.hms.cordova.mlkit.transactors.ImageSegmentationTransactor;
 import com.huawei.hms.cordova.mlkit.transactors.ObjectAnalyzerTransactor;
@@ -52,6 +53,9 @@ import com.huawei.hms.mlsdk.face.MLFaceAnalyzerSetting;
 import com.huawei.hms.mlsdk.face.MLMaxSizeFaceTransactor;
 import com.huawei.hms.mlsdk.face.face3d.ML3DFaceAnalyzer;
 import com.huawei.hms.mlsdk.face.face3d.ML3DFaceAnalyzerSetting;
+import com.huawei.hms.mlsdk.gesture.MLGestureAnalyzer;
+import com.huawei.hms.mlsdk.gesture.MLGestureAnalyzerFactory;
+import com.huawei.hms.mlsdk.gesture.MLGestureAnalyzerSetting;
 import com.huawei.hms.mlsdk.handkeypoint.MLHandKeypointAnalyzer;
 import com.huawei.hms.mlsdk.handkeypoint.MLHandKeypointAnalyzerFactory;
 import com.huawei.hms.mlsdk.handkeypoint.MLHandKeypointAnalyzerSetting;
@@ -79,13 +83,21 @@ import java.io.IOException;
 
 public class MLHMSLensEngine extends HMSProvider {
     public static final String TAG = MLHMSLensEngine.class.getSimpleName();
+
     private LensEngine lensEngine;
+
     private LensEnginePreview lensEnginePreview;
+
     private GraphicOverlay graphicOverlay;
+
     private MLCompositeAnalyzer compositeAnalyzer;
+
     private InitialProps props;
+
     private int currentScrollY = 0;
+
     private int currentScrollX = 0;
+
     private CallbackContext callbackContext;
 
     public MLHMSLensEngine(Context ctx) {
@@ -233,17 +245,25 @@ public class MLHMSLensEngine extends HMSProvider {
             HMSLogger.getInstance(getContext())
                 .sendSingleEvent("lensEnginePhotograph", String.valueOf(CordovaErrors.ANALYSIS_FAILURE));
         } else {
-            lensEngine.photograph(() -> Log.i(TAG, "clicked"), bytes -> {
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.putOpt("bitmap", Base64.encodeToString(bytes, Base64.DEFAULT));
-                    callbackContext.success(jsonObject);
-                    HMSLogger.getInstance(getContext()).sendSingleEvent("livePhotographyAnalyse");
-                } catch (JSONException e) {
-                    callbackContext.error(e.getMessage());
-                    HMSLogger.getInstance(getContext()).sendSingleEvent("livePhotographyAnalyse", "-1");
+            lensEngine.photograph((new LensEngine.ShutterListener() {
+                @Override
+                public void clickShutter() {
+                    HMSLogger.getInstance(getContext()).sendSingleEvent("clickShutter");
                 }
+            }), new LensEngine.PhotographListener() {
+                @Override
+                public void takenPhotograph(byte[] bytes) {
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.putOpt("bitmap", Base64.encodeToString(bytes, Base64.DEFAULT));
+                        callbackContext.success(jsonObject);
+                        HMSLogger.getInstance(getContext()).sendSingleEvent("livePhotographyAnalyse");
+                    } catch (JSONException e) {
+                        callbackContext.error(e.getMessage());
+                        HMSLogger.getInstance(getContext()).sendSingleEvent("livePhotographyAnalyse", "-1");
+                    }
 
+                }
             });
 
         }
@@ -313,6 +333,19 @@ public class MLHMSLensEngine extends HMSProvider {
                     new HandAnalyzerTransactor(graphicSetting, graphicOverlay, getContext()));
                 return mlHandKeypointAnalyzer;
             }
+            case "GESTURE": {
+                MLGestureAnalyzer mlGestureAnalyzer;
+                MLGestureAnalyzerSetting setting;
+                if (analyzerSetting != null) {
+                    setting = TextUtils.toObject(analyzerSetting, MLGestureAnalyzerSetting.class);
+                } else {
+                    setting = new MLGestureAnalyzerSetting.Factory().create();
+                }
+                mlGestureAnalyzer = MLGestureAnalyzerFactory.getInstance().getGestureAnalyzer(setting);
+                mlGestureAnalyzer.setTransactor(
+                    new GestureAnalyzerTransactor(graphicSetting, graphicOverlay, getContext()));
+                return mlGestureAnalyzer;
+            }
             case "SKELETON": {
                 MLSkeletonAnalyzer mlSkeletonAnalyzer;
                 MLSkeletonAnalyzerSetting skeletonAnalyzerSetting;
@@ -337,6 +370,7 @@ public class MLHMSLensEngine extends HMSProvider {
                     mlObjectAnalyzerSetting = new MLObjectAnalyzerSetting.Factory().setAnalyzerType(
                         MLObjectAnalyzerSetting.TYPE_VIDEO).allowMultiResults().allowClassification().create();
                 }
+
                 mlObjectAnalyzer = MLAnalyzerFactory.getInstance().getLocalObjectAnalyzer(mlObjectAnalyzerSetting);
                 mlObjectAnalyzer.setTransactor(
                     new ObjectAnalyzerTransactor(graphicOverlay, graphicSetting, getContext()));
@@ -447,7 +481,7 @@ public class MLHMSLensEngine extends HMSProvider {
             PluginResult pluginResult = new PluginResult(PluginResult.Status.OK,
                 TextUtils.fromSparseArrayMLTextBlockToJSON(items));
             pluginResult.setKeepCallback(true);
-            Log.i(TAG, "" + TextUtils.fromSparseArrayMLTextBlockToJSON(items));
+            Log.i(TAG, "ocrTransactResult : " + TextUtils.fromSparseArrayMLTextBlockToJSON(items));
             callbackContext.sendPluginResult(pluginResult);
 
         }
@@ -464,7 +498,9 @@ public class MLHMSLensEngine extends HMSProvider {
             PluginResult pluginResult = new PluginResult(PluginResult.Status.OK,
                 TextUtils.fromSparseArrayImageClassificationJSON(items));
             pluginResult.setKeepCallback(true);
-            Log.i(TAG, "" + TextUtils.fromSparseArrayImageClassificationJSON(items));
+            Log.i(TAG,
+                "classificationAnalyzerTransactor transactResult :" + TextUtils.fromSparseArrayImageClassificationJSON(
+                    items));
             callbackContext.sendPluginResult(pluginResult);
         }
     }

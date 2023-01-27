@@ -1,5 +1,5 @@
 <!--
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -14,24 +14,37 @@
     limitations under the License.
 -->
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-title> Blank</ion-title>
+    </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">HMS Site Demo</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-button id="text-search" (click)="textSearch()">Text Search</ion-button>
-  <ion-button id="nearby-search" (click)="nearbySearch()">Nearby Search</ion-button>
-  <ion-button id="detail-search" (click)="detailSearch()">Detail Search</ion-button>
-  <ion-button id="query-suggestion" (click)="querySuggestion()">Query Suggestion</ion-button>
-  <ion-button id="query-autocomplete" (click)="queryAutocomplete()">Query Autocomplete</ion-button>
-  <ion-button id="goto-activity" (click)="gotoActivity()">Go to Activity</ion-button>
-  <pre id="logger"></pre>
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">HMS Site Demo</ion-title>
+        </ion-toolbar>
+    </ion-header>
+    <ion-button (click)="textSearch()" id="text-search">Text Search</ion-button>
+    <ion-button (click)="nearbySearch()" id="nearby-search"
+    >Nearby Search
+    </ion-button
+    >
+    <ion-button (click)="detailSearch()" id="detail-search"
+    >Detail Search
+    </ion-button
+    >
+    <ion-button (click)="querySuggestion()" id="query-suggestion"
+    >Query Suggestion
+    </ion-button
+    >
+    <ion-button (click)="queryAutocomplete()" id="query-autocomplete"
+    >Query Autocomplete
+    </ion-button
+    >
+    <ion-button (click)="gotoActivity()" id="goto-activity"
+    >Go to Activity
+    </ion-button
+    >
+    <pre id="logger"></pre>
 </ion-content>

@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -26,28 +26,13 @@ newElement.classList.add('text-center');
 newElement.role = 'alert';
 
 function onDeviceReady() {
-    document.getElementById("requestActivityIdentificationPermission").onclick = requestActivityIdentificationPermission;
-    document.getElementById("hasPermission").onclick = hasPermission;
     document.getElementById("createActivityIdentificationUpdates").onclick = createActivityIdentificationUpdates;
     document.getElementById("deleteActivityIdentificationUpdates").onclick = deleteActivityIdentificationUpdates;
     activityService = HMSLocation.getActivityIdentificationService();
 }
 
-async function requestActivityIdentificationPermission() {
-    const button = document.getElementById("requestActivityIdentificationPermission");
-    const result = await activityService.requestActivityRecognitionPermission();
-    createPermissionLayout(result, newElement, "Permission is granted.", "Permission is denied.");
-    button.parentNode.insertBefore(newElement, button.nextSibling);
-}
-
-async function hasPermission() {
-    const button = document.getElementById("hasPermission");
-    const isGranted = await activityService.hasActivityRecognitionPermission();
-    createPermissionLayout(isGranted, newElement, "TRUE", "FALSE");
-    button.parentNode.insertBefore(newElement, button.nextSibling);
-}
-
 async function createActivityIdentificationUpdates() {
+    try{
     let intervalMillisValue = 2000;
     if (intervalMillis.value !== "") {
         intervalMillisValue = intervalMillis.value;
@@ -59,11 +44,20 @@ async function createActivityIdentificationUpdates() {
     console.log(isSuccess);
     activityIdentificationUpdateRequests.push(requestCodeValue);
     identificationEventLog.innerHTML = "";
+    
+} catch (error) {
+    alert(JSON.stringify(error));
+}
 }
 
 async function deleteActivityIdentificationUpdates() {
+    try{
     const requestCodeValue = document.getElementById("deleteRequestCode").value;
     const isSuccess = await activityService.deleteActivityIdentificationUpdates(requestCodeValue);
     console.log(isSuccess);
     identificationEventLog.innerHTML = "";
+    
+} catch (error) {
+    alert(JSON.stringify(error));
+}
 }

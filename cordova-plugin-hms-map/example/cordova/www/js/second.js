@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -27,6 +27,10 @@ async function onDeviceReady(){
     document.getElementById("changeClusterColor").onclick = changeClusterColor;
     document.getElementById("changeClusterIcon").onclick = changeClusterIcon;
     document.getElementById("clearClusterStyle").onclick = clearClusterStyle;
+    document.getElementById("changeLogoPosition").onclick = changeLogoPosition;
+    document.getElementById("changeLogoPadding").onclick = changeLogoPadding;
+    document.getElementById("clearLogoSettings").onclick = clearLogoSettings;
+    document.getElementById("changeStyle").onclick = changeStyle;
 
     let mapOptions = {"cameraPosition": {"target": {"lat": 40.7587658, "lng": 30.3146964}, "zoom": 2}};
     map = await HMSMap.getMap("secondMap", mapOptions);
@@ -113,3 +117,24 @@ async function navigateToFirst(){
     map.hideMap();
 };
 
+async function changeLogoPosition() {
+    const logoPosition = HMSMap.Gravity.TOP|HMSMap.Gravity.END;
+    await map.getUiSettings().setLogoPosition(logoPosition);
+}
+
+async function changeLogoPadding() {
+    await map.getUiSettings().setLogoPadding(0, 0, 0, 0);
+}
+
+async function clearLogoSettings() {
+    const logoPosition = HMSMap.Gravity.BOTTOM|HMSMap.Gravity.START;
+    await map.getUiSettings().setLogoPosition(logoPosition);
+    await map.getUiSettings().setLogoPadding(50, 50, 50, 50);
+}
+
+async function changeStyle() {
+    const styleId = "<style_id>";
+    const previewId = "<preview_id>";
+    await map.setStyleId(styleId);
+    await map.previewId(previewId);
+}

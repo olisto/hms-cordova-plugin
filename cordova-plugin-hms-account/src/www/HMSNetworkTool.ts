@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@ import { asyncExec } from './utils'
 import { Cookie, DomainInfo } from './HMSCommonTypes';
 
 
-export function buildNetworkURL(domainHttps: DomainInfo): Promise<String> {
-  return asyncExec('HMSNetworkTool', 'buildNetworkURL', [domainHttps]);
+export function buildNetworkURL(domainHttps: DomainInfo): Promise<string> {
+  return asyncExec('HMSAccount', 'HMSNetworkTool', ['buildNetworkURL',domainHttps]);
 }
 
-export function buildNetworkCookie(cookie: Cookie): Promise<String> {
-  return asyncExec('HMSNetworkTool', 'buildNetworkCookie', [cookie]);
+export function buildNetworkCookie(cookie: Cookie): Promise<string> {
+  return asyncExec('HMSAccount', 'HMSNetworkTool', ['buildNetworkCookie',cookie]);
 }
 
 

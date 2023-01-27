@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import android.util.Log;
 import android.webkit.WebView;
 
 import com.huawei.hms.cordova.push.constants.Core;
-import com.huawei.hms.cordova.push.utils.ApplicationUtils;
 import com.huawei.hms.cordova.push.utils.RemoteMessageUtils;
+import com.huawei.hms.cordova.push.utils.ResolvableExceptionUtils;
 import com.huawei.hms.push.HmsMessageService;
 import com.huawei.hms.push.RemoteMessage;
 import com.huawei.hms.push.SendException;
@@ -41,20 +41,27 @@ import static com.huawei.hms.cordova.push.utils.HtmlUtils.wrapInsideScriptTag;
 public class HmsPushMessageService extends HmsMessageService {
 
     private final static String TAG = HmsPushMessageService.class.getSimpleName();
+
+    private static Boolean isApplicationRunning = false;
+
     private WebView webView;
+
+    public static void setApplicationRunningStatus(boolean isRunning) {
+        isApplicationRunning = isRunning;
+    }
 
     @Override
     public void onMessageReceived(RemoteMessage message) {
         Log.w(TAG, "** onMessageReceived **");
 
         try {
-            boolean isApplicationInForeground = ApplicationUtils.isApplicationInForeground(getApplicationContext());
-            if (isApplicationInForeground) {
+            if (isApplicationRunning) {
                 HmsPushMessagePublisher.sendMessageReceivedEvent(message);
             } else {
-                if(getApplication() == null)
+                if (getApplication() == null) {
                     return;
-                if(webView==null){
+                }
+                if (webView == null) {
                     webView = new WebView(getApplicationContext());
                     webView.getSettings().setSavePassword(false);
                     webView.getSettings().setJavaScriptEnabled(true);
@@ -64,19 +71,26 @@ public class HmsPushMessageService extends HmsMessageService {
                     webView.getSettings().setAllowContentAccess(true);
                     webView.addJavascriptInterface(new BackgroundJavaScriptInterface(getApplicationContext()),
                         "HmsLocalNotification");
-                    webView.addJavascriptInterface(new BackgroundWebViewLocalStorage(getApplicationContext(),webView),"HmsPush");
+                    webView.addJavascriptInterface(new BackgroundWebViewLocalStorage(getApplicationContext(), webView),
+                        "HmsPush");
                 }
 
                 String myAppId = getApplicationContext().getApplicationInfo().uid + "";
                 SharedPreferences sharedPref = getApplication().getApplicationContext()
                     .getSharedPreferences(getPackageName() + "." + myAppId, Context.MODE_PRIVATE);
-                String filename = sharedPref.getString("backgroundFileName",null);
-                if(filename==null)
+                String filename = sharedPref.getString("backgroundFileName", null);
+                if (filename == null) {
                     return;
+                }
 
-                String onRemoteMessageEvent =  String.format(Locale.ENGLISH,"if(window.hasOwnProperty('%s')) window['%s'](%s)",Core.Event.BACKGROUND_REMOTE_DATA_MESSAGE_RECEIVED ,Core.Event.BACKGROUND_REMOTE_DATA_MESSAGE_RECEIVED,RemoteMessageUtils.fromMap(message));
-                String definedFunction = wrapInsideScriptTag(onBackgroundRemoteMessageReceived() + getItemResponseListener()  + readFile(this,filename) + onRemoteMessageEvent);
-                webView.loadDataWithBaseURL("file:///android_assets/",definedFunction,"text/html","utf-8",null);
+                String onRemoteMessageEvent = String.format(Locale.ENGLISH,
+                    "if(window.hasOwnProperty('%s')) window['%s'](%s)",
+                    Core.Event.BACKGROUND_REMOTE_DATA_MESSAGE_RECEIVED,
+                    Core.Event.BACKGROUND_REMOTE_DATA_MESSAGE_RECEIVED, RemoteMessageUtils.fromMap(message));
+                String definedFunction = wrapInsideScriptTag(
+                    onBackgroundRemoteMessageReceived() + getItemResponseListener() + readFile(this, filename)
+                        + onRemoteMessageEvent);
+                webView.loadDataWithBaseURL("file:///android_assets/", definedFunction, "text/html", "utf-8", null);
             }
         } catch (JSONException e) {
             Log.w(TAG, "onMessageReceived: " + e.getLocalizedMessage());
@@ -91,12 +105,14 @@ public class HmsPushMessageService extends HmsMessageService {
 
     @Override
     public void onMessageDelivered(String msgId, Exception e) {
-        HmsPushMessagePublisher.sendOnMessageDeliveredEvent(msgId, ((SendException) e).getErrorCode(),e.getLocalizedMessage());
+        HmsPushMessagePublisher.sendOnMessageDeliveredEvent(msgId, ((SendException) e).getErrorCode(),
+            e.getLocalizedMessage());
     }
 
     @Override
     public void onSendError(String msgId, Exception e) {
-        HmsPushMessagePublisher.sendOnMessageSentErrorEvent(msgId, ((SendException) e).getErrorCode(),e.getLocalizedMessage());
+        HmsPushMessagePublisher.sendOnMessageSentErrorEvent(msgId, ((SendException) e).getErrorCode(),
+            e.getLocalizedMessage());
     }
 
     @Override
@@ -111,11 +127,12 @@ public class HmsPushMessageService extends HmsMessageService {
 
     @Override
     public void onNewToken(String s, Bundle bundle) {
-        HmsPushMessagePublisher.sendOnNewMultiSenderTokenEvent(s,bundle);
+        HmsPushMessagePublisher.sendOnNewMultiSenderTokenEvent(s, bundle);
     }
 
     @Override
     public void onTokenError(Exception e, Bundle bundle) {
-        HmsPushMessagePublisher.sendMultiSenderTokenErrorEvent(e,bundle);
+        HmsPushMessagePublisher.sendMultiSenderTokenErrorEvent(e, bundle);
+        new ResolvableExceptionUtils(e, webView, TAG);
     }
 }

@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -13,17 +13,17 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 
-import { Platform } from '@ionic/angular';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { HMSNearby, HMSPermission} from '@hmscore/ionic-native-hms-nearby/ngx';
+import { Platform } from "@ionic/angular";
+import { SplashScreen } from "@ionic-native/splash-screen/ngx";
+import { StatusBar } from "@ionic-native/status-bar/ngx";
+import { HMSNearby, HMSPermission } from "@hmscore/ionic-native-hms-nearby/ngx";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: 'app.component.html',
-  styleUrls: ['app.component.scss']
+  selector: "app-root",
+  templateUrl: "app.component.html",
+  styleUrls: ["app.component.scss"],
 })
 export class AppComponent {
   constructor(
@@ -40,7 +40,8 @@ export class AppComponent {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
 
-      this.hmsNearby.requestPermissions([
+      this.hmsNearby
+        .requestPermissions([
           HMSPermission.PERMISSION_BLUETOOTH,
           HMSPermission.PERMISSION_BLUETOOTH_ADMIN,
           HMSPermission.PERMISSION_ACCESS_WIFI_STATE,
@@ -48,12 +49,11 @@ export class AppComponent {
           HMSPermission.PERMISSION_ACCESS_COARSE_LOCATION,
           HMSPermission.PERMISSION_ACCESS_FINE_LOCATION,
           HMSPermission.PERMISSION_READ_EXTERNAL_STORAGE,
-          HMSPermission.PERMISSION_WRITE_EXTERNAL_STORAGE
-      ]).then((res) => {
+          HMSPermission.PERMISSION_WRITE_EXTERNAL_STORAGE,
+        ])
+        .then((res) => {
           console.log("request permissions result: " + res);
-      });
+        });
     });
-
-    
   }
 }

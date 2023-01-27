@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -60,5 +60,7 @@ public interface RemoteMessageAttributes {
     String IS_DEFAULT_LIGHT = "isDefaultLight";
     String IS_DEFAULT_SOUND = "isDefaultSound";
     String IS_DEFAULT_VIBRATE = "isDefaultVibrate";
+    String ANALYTIC_INFO = "analyticInfo";
+    String ANALYTIC_INFO_MAP = "analyticInfoMap";
 
 }

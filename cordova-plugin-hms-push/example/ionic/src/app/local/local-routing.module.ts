@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
     limitations under the License.
 */
 
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { NgModule } from "@angular/core";
+import { Routes, RouterModule } from "@angular/router";
 
-import { LocalPage } from './local.page';
+import { LocalPage } from "./local.page";
 
 const routes: Routes = [
   {
-    path: '',
-    component: LocalPage
-  }
+    path: "",
+    component: LocalPage,
+  },
 ];
 
 @NgModule({

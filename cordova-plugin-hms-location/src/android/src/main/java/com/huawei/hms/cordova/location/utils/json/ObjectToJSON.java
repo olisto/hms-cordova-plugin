@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+
 package com.huawei.hms.cordova.location.utils.json;
 
 import android.location.Location;
@@ -28,6 +29,7 @@ import com.huawei.hms.location.Geofence;
 import com.huawei.hms.location.HWLocation;
 import com.huawei.hms.location.LocationResult;
 import com.huawei.hms.location.LocationSettingsStates;
+import com.huawei.hms.location.LogConfig;
 import com.huawei.hms.location.NavigationResult;
 
 import org.json.JSONArray;
@@ -65,40 +67,45 @@ public class ObjectToJSON {
         return json;
     }
 
+    public static JSONArray convertHWLocationListToJSONArray(List<HWLocation> hwLocations) {
+        JSONArray jsonArray = new JSONArray();
+        for (HWLocation hwLocation : hwLocations) {
+            jsonArray.put(convertHWLocationToJSON(hwLocation));
+        }
+        return jsonArray;
+    }
+
     public static JSONObject convertHWLocationToJSON(HWLocation hwLocation) {
         JSONObject result = new JSONObject();
         try {
-            result
-                    .put("latitude", hwLocation.getLatitude())
-                    .put("longitude", hwLocation.getLongitude())
-                    .put("altitude", hwLocation.getAltitude())
-                    .put("speed", hwLocation.getSpeed())
-                    .put("bearing", hwLocation.getBearing())
-                    .put("accuracy", hwLocation.getAccuracy())
-                    .put("provider", hwLocation.getProvider())
-                    .put("time", hwLocation.getTime())
-                    .put("elapsedRealtimeNanos", hwLocation.getElapsedRealtimeNanos())
-                    .put("countryCode", hwLocation.getCountryCode())
-                    .put("countryName", hwLocation.getCountryName())
-                    .put("state", hwLocation.getState())
-                    .put("city", hwLocation.getCity())
-                    .put("county", hwLocation.getCounty())
-                    .put("street", hwLocation.getStreet())
-                    .put("featureName", hwLocation.getFeatureName())
-                    .put("postalCode", hwLocation.getPostalCode())
-                    .put("phone", hwLocation.getPhone())
-                    .put("url", hwLocation.getUrl())
-                    .put("extraInfo", CordovaUtils.fromMapToJSONObject(hwLocation.getExtraInfo()));
+            result.put("latitude", hwLocation.getLatitude())
+                .put("longitude", hwLocation.getLongitude())
+                .put("altitude", hwLocation.getAltitude())
+                .put("speed", hwLocation.getSpeed())
+                .put("bearing", hwLocation.getBearing())
+                .put("accuracy", hwLocation.getAccuracy())
+                .put("provider", hwLocation.getProvider())
+                .put("time", hwLocation.getTime())
+                .put("elapsedRealtimeNanos", hwLocation.getElapsedRealtimeNanos())
+                .put("countryCode", hwLocation.getCountryCode())
+                .put("countryName", hwLocation.getCountryName())
+                .put("state", hwLocation.getState())
+                .put("city", hwLocation.getCity())
+                .put("county", hwLocation.getCounty())
+                .put("street", hwLocation.getStreet())
+                .put("featureName", hwLocation.getFeatureName())
+                .put("postalCode", hwLocation.getPostalCode())
+                .put("phone", hwLocation.getPhone())
+                .put("url", hwLocation.getUrl())
+                .put("extraInfo", CordovaUtils.fromMapToJSONObject(hwLocation.getExtraInfo()));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                result
-                        .put("verticalAccuracyMeters", hwLocation.getVerticalAccuracyMeters())
-                        .put("bearingAccuracyDegrees", hwLocation.getBearingAccuracyDegrees())
-                        .put("speedAccuracyMetersPerSecond", hwLocation.getSpeedAccuracyMetersPerSecond());
+                result.put("verticalAccuracyMeters", hwLocation.getVerticalAccuracyMeters())
+                    .put("bearingAccuracyDegrees", hwLocation.getBearingAccuracyDegrees())
+                    .put("speedAccuracyMetersPerSecond", hwLocation.getSpeedAccuracyMetersPerSecond());
             } else {
-                result
-                        .put("verticalAccuracyMeters", 0.0)
-                        .put("bearingAccuracyDegrees", 0.0)
-                        .put("speedAccuracyMetersPerSecond", 0.0);
+                result.put("verticalAccuracyMeters", 0.0)
+                    .put("bearingAccuracyDegrees", 0.0)
+                    .put("speedAccuracyMetersPerSecond", 0.0);
             }
         } catch (JSONException e) {
             Log.d(TAG, e.getLocalizedMessage());
@@ -109,15 +116,14 @@ public class ObjectToJSON {
     public static JSONObject locationSettingsStatesToJSON(LocationSettingsStates locationSettingsStates) {
         JSONObject json = new JSONObject();
         try {
-            json
-                    .put("isBlePresent", locationSettingsStates.isBlePresent())
-                    .put("isBleUsable", locationSettingsStates.isBleUsable())
-                    .put("isGnssPresent", locationSettingsStates.isGnssPresent())
-                    .put("isGnssUsable", locationSettingsStates.isGnssUsable())
-                    .put("isLocationPresent", locationSettingsStates.isLocationPresent())
-                    .put("isLocationUsable", locationSettingsStates.isLocationUsable())
-                    .put("isNetworkLocationPresent", locationSettingsStates.isNetworkLocationPresent())
-                    .put("isNetworkLocationUsable", locationSettingsStates.isNetworkLocationUsable());
+            json.put("isBlePresent", locationSettingsStates.isBlePresent())
+                .put("isBleUsable", locationSettingsStates.isBleUsable())
+                .put("isGnssPresent", locationSettingsStates.isGnssPresent())
+                .put("isGnssUsable", locationSettingsStates.isGnssUsable())
+                .put("isLocationPresent", locationSettingsStates.isLocationPresent())
+                .put("isLocationUsable", locationSettingsStates.isLocationUsable())
+                .put("isNetworkLocationPresent", locationSettingsStates.isNetworkLocationPresent())
+                .put("isNetworkLocationUsable", locationSettingsStates.isNetworkLocationUsable());
         } catch (JSONException e) {
             Log.d(TAG, e.getLocalizedMessage());
         }
@@ -139,8 +145,10 @@ public class ObjectToJSON {
         JSONObject result = new JSONObject();
         try {
             result.put("elapsedTimeFromReboot", (double) response.getElapsedTimeFromReboot());
-            result.put("mostActivityIdentification", activityIdentificationDataToJSON(response.getMostActivityIdentification()));
-            result.put("activityIdentificationDatas", activityIdentificationDatasToJSON(response.getActivityIdentificationDatas()));
+            result.put("mostActivityIdentification",
+                activityIdentificationDataToJSON(response.getMostActivityIdentification()));
+            result.put("activityIdentificationDatas",
+                activityIdentificationDatasToJSON(response.getActivityIdentificationDatas()));
             result.put("time", (double) response.getTime());
         } catch (JSONException e) {
             Log.d(TAG, e.getLocalizedMessage());
@@ -155,7 +163,8 @@ public class ObjectToJSON {
         return result;
     }
 
-    private static JSONArray activityIdentificationDatasToJSON(List<ActivityIdentificationData> datas) throws JSONException {
+    private static JSONArray activityIdentificationDatasToJSON(List<ActivityIdentificationData> datas)
+        throws JSONException {
         JSONArray result = new JSONArray();
         for (ActivityIdentificationData data : datas) {
             result.put(activityIdentificationDataToJSON(data));
@@ -166,7 +175,8 @@ public class ObjectToJSON {
     public static JSONObject activityConversionResponseToJSON(ActivityConversionResponse response) {
         JSONObject result = new JSONObject();
         try {
-            result.put("activityConversionDataList", activityConversionListToJSON(response.getActivityConversionDatas()));
+            result.put("activityConversionDataList",
+                activityConversionListToJSON(response.getActivityConversionDatas()));
         } catch (JSONException e) {
             Log.d(TAG, e.getLocalizedMessage());
         }
@@ -229,6 +239,15 @@ public class ObjectToJSON {
         } catch (JSONException e) {
             Log.d(TAG, e.getLocalizedMessage());
         }
+        return result;
+    }
+
+    public static JSONObject convertLogConfigToJSON(LogConfig logConfig) throws JSONException {
+        JSONObject result = new JSONObject();
+        result.put("fileExpiredTime", logConfig.getFileExpiredTime());
+        result.put("fileNum", logConfig.getFileNum());
+        result.put("fileSize", logConfig.getFileSize());
+        result.put("logPath", logConfig.getLogPath());
         return result;
     }
 

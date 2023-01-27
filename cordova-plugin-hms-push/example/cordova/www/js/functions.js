@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -23,10 +23,8 @@ function openCustomIntent() {
 }
 
 function init() {
-
   HmsPush.init();
   HmsPush.setBackgroundFile("www/background.js");
-
 }
 
 function turnOffPush() {
@@ -61,7 +59,10 @@ function getAAID() {
 
 function getToken() {
   HmsPush.getToken(HmsPush.DEFAULT_TOKEN_SCOPE)
-    .then((result) => {defaultSuccessHandler("getToken", result); console.log(JSON.stringify(result))})
+    .then((result) => {
+      defaultSuccessHandler("getToken", result);
+      console.log(JSON.stringify(result));
+    })
     .catch((error) => defaultExceptionHandler("getToken", error));
 }
 
@@ -133,10 +134,6 @@ function sendRemoteMessage() {
 
 function getInitialNotification() {
   HmsPush.getInitialNotification()
-    .then((result) =>
-      defaultSuccessHandler("getInitialNotification",result)
-    )
-    .catch((error) =>
-    defaultExceptionHandler("getInitialNotification", error)
-    );
+    .then((result) => defaultSuccessHandler("getInitialNotification", result))
+    .catch((error) => defaultExceptionHandler("getInitialNotification", error));
 }

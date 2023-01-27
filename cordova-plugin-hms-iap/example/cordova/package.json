@@ -1,10 +1,10 @@
 {
   "name": "cordova-hms-iap-demo",
   "displayName": "HMSInAppPurchasesDemo",
-  "version": "5.0.4-302",
+  "version": "6.4.0-301",
   "description": "A demo application which shows the usage of HMS IAP plugin.",
   "license": "Apache-2.0",
-  "licenseFilename": "LICENCE",
+  "licenseFilename": "LICENSE",
   "readmeFilename": "README.md",
   "main": "./www/js/index.js",
   "keywords": [
@@ -13,7 +13,6 @@
   "devDependencies": {},
   "cordova": {
     "platforms": [
-      "android"
     ],
     "plugins": {}
   },
@@ -21,7 +20,7 @@
     ".docs",
     "www",
     "config.xml",
-    "LICENCE",
+    "LICENSE",
     "package.json",
     "README.md"
   ]

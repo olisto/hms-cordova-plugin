@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+
 package com.huawei.hms.cordova.location.helpers;
 
 import android.content.Context;
@@ -25,8 +26,9 @@ import org.json.JSONObject;
 import java.util.Locale;
 
 public class BackgroundTaskHandler {
-    private WebView webView;
     private final Context context;
+
+    private WebView webView;
 
     public BackgroundTaskHandler(Context context) {
         this.context = context;
@@ -43,7 +45,8 @@ public class BackgroundTaskHandler {
 
     private String fetchFunctionFromStorage(String functionName) {
         String myAppId = context.getApplicationInfo().uid + "";
-        SharedPreferences sharedPref = context.getSharedPreferences(context.getPackageName() + "." + myAppId, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getPackageName() + "." + myAppId,
+            Context.MODE_PRIVATE);
         return sharedPref.getString(functionName, null);
     }
 
@@ -53,8 +56,10 @@ public class BackgroundTaskHandler {
         preFunction = preFunction.replaceFirst("=>", "");
         preFunction = preFunction.replaceFirst("function", "");
         String function = String.format(Locale.ENGLISH, "function callback%s", preFunction);
-        if (function.contains("ionic") || function.contains("__WEBPACK_") || function.contains("IMPORTED") || function.contains("MODULE"))
+        if (function.contains("ionic") || function.contains("__WEBPACK_") || function.contains("IMPORTED")
+            || function.contains("MODULE")) {
             function = cleanIonicPrefixes(function);
+        }
         return function;
     }
 
@@ -65,10 +70,11 @@ public class BackgroundTaskHandler {
             if (line.contains("__WEBPACK_") || line.contains("IMPORTED") || line.contains("MODULE")) {
                 int start = line.indexOf("[\"");
                 int end;
-                if (line.contains(";"))
+                if (line.contains(";")) {
                     end = line.indexOf(";");
-                else
+                } else {
                     end = line.indexOf("\n");
+                }
                 newFunction.append(line.substring(start, end).replace("[\"", "").replace("\"]", "")).append(";\n");
             } else {
                 newFunction.append(line).append("\n");
@@ -78,7 +84,9 @@ public class BackgroundTaskHandler {
     }
 
     public void handle(String functionName, JSONObject result) {
-        if (webView == null) webView = buildWebView(context);
+        if (webView == null) {
+            webView = buildWebView(context);
+        }
         String function = prepareBackgroundFunction(functionName);
         executeBackgroundFunction(webView, function, result);
     }

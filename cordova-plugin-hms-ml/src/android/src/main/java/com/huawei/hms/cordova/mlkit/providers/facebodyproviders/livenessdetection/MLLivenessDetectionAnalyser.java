@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import static com.huawei.hms.mlsdk.livenessdetection.MLLivenessDetectView.DETECT
 
 import android.content.Context;
 
+import com.huawei.hms.cordova.mlkit.helpers.MLLivenessCaptureErrors;
 import com.huawei.hms.cordova.mlkit.interfaces.HMSProvider;
 import com.huawei.hms.cordova.mlkit.logger.HMSLogger;
 import com.huawei.hms.cordova.mlkit.utils.TextUtils;
@@ -55,7 +56,7 @@ public class MLLivenessDetectionAnalyser extends HMSProvider {
             }
 
             public void onFailure(int errorCode) {
-                callbackContext.error("Error: " + errorCode);
+                callbackContext.error(MLLivenessCaptureErrors.toErrorJSON(MLLivenessCaptureErrors.USER_CANCEL));
                 HMSLogger.getInstance(getContext()).sendSingleEvent("livenessDetection", "-1");
             }
         });

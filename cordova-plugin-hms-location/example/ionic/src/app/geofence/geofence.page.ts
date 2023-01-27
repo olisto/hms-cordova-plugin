@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -42,14 +42,14 @@ export class GeofencePage {
 
     constructor(private platform: Platform, private hmsLocation: HMSLocation) {
         platform.ready().then(value => {
-            this.geofenceService = this.hmsLocation.getGeofenceService();
+            this.geofenceService = hmsLocation.getGeofenceService();
             this.geofenceListLog = document.getElementById('geofenceListLog');
             this.dropDownList = document.getElementById('geoList');
             this.conversionsSelect = document.getElementById('conversions');
             hmsLocation.addListener(Events.GEOFENCE_RESULT, (data: []) => {
                 console.log(JSON.stringify(data));
             });
-        });
+        }).catch(reason => console.log(reason));
     }
 
     async addToGeofenceList() {
@@ -95,6 +95,7 @@ export class GeofencePage {
     }
 
     async createGeofenceList() {
+        try{
         let initConversion = GeofenceInitConversionType.ENTER_INIT_CONVERSION;
         let coordinateType = CoordinateType.COORDINATE_TYPE_WGS_84;
         if (this.initConversion !== '' && this.initConversion !== undefined) {
@@ -111,13 +112,20 @@ export class GeofencePage {
         option.value = requestCode;
         this.dropDownList.add(option);
         this.cleanInputs();
+    } catch (error) {
+        alert(JSON.stringify(error));
+    }
     }
 
     async deleteGeofenceList() {
+        try{
         const selected: any = this.dropDownList.options[this.dropDownList.selectedIndex];
         this.dropDownList.remove(this.dropDownList.selectedIndex);
         const deleteGeofenceListResult = await this.geofenceService.deleteGeofenceList(selected.value);
         console.log(deleteGeofenceListResult);
+    } catch (error) {
+        alert(JSON.stringify(error));
+    }
     }
 
     private cleanInputs() {

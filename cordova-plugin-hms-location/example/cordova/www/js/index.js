@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -15,9 +15,25 @@
 */
 document.addEventListener('deviceready', onDeviceReady, false);
 
+/*
+<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+<uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+<uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="com.huawei.hms.permission.ACTIVITY_RECOGNITION" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+*/
+
 async function onDeviceReady() {
     document.getElementById("locationPage").onclick = locationPage;
     document.getElementById("geofencePage").onclick = geofencePage;
+    document.getElementById("geocoderPage").onclick = geocoderPage;
     document.getElementById("activityConversionPage").onclick = activityConversionPage;
     document.getElementById("activityIdentificationPage").onclick = activityIdentificationPage;
 }
@@ -28,6 +44,10 @@ function locationPage() {
 
 function geofencePage() {
     window.location.href = "geofence.html";
+}
+
+function geocoderPage() {
+    window.location.href = "geocoder.html";
 }
 
 function activityConversionPage() {

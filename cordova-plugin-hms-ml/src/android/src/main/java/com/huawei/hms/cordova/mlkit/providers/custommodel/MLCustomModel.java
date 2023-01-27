@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.huawei.hms.cordova.mlkit.providers.custommodel;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -23,10 +24,9 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.huawei.hmf.tasks.Continuation;
 import com.huawei.hmf.tasks.Task;
+import com.huawei.hms.cordova.mlkit.interfaces.HMSProvider;
 import com.huawei.hms.cordova.mlkit.logger.HMSLogger;
 import com.huawei.hms.cordova.mlkit.utils.TextUtils;
 import com.huawei.hms.mlsdk.common.MLException;
@@ -60,26 +60,48 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class MLCustomModel extends AppCompatActivity {
+public class MLCustomModel extends HMSProvider {
     private final static String TAG = MLCustomModel.class.getName();
+
     private static final int DOWNLOAD = 1;
+
     private static final long M = 1024 * 1024;
+
     private static final float IMAGE_MEAN = 127.0f;
+
     private static final float IMAGE_STD = 128.0f;
+
     private String MODEL_NAME = "mobilenet_v1_1_0_224_quant";
+
     private String LABEL_FILE_NAME = "labels_mobilenet_quant_v1_224.txt";
+
     private String MODEL_FULL_NAME = MODEL_NAME + ".ms";
+
     private int BITMAP_WIDTH = 224;
+
     private int OUTPUT_SIZE = 1001;
+
     private int BITMAP_HEIGHT = 224;
+
     private CallbackContext callbackContext;
+
     private ArrayList<String> mLabels = new ArrayList<>();
+
     private MLCustomLocalModel localModel;
+
     private MLCustomRemoteModel remoteModel;
+
     private TreeMap<String, Float> result;
+
     private CordovaInterface cordovaInterface;
+
     private MLModelExecutor mlModelExecutor;
+
     private boolean isDownload = false;
+
+    public MLCustomModel(Context ctx) {
+        super(ctx);
+    }
 
     public void initializeCustomModelAnalyser(final JSONObject params, final CallbackContext callbackCtx,
         final CordovaInterface cordovaInterface) throws JSONException {
@@ -178,7 +200,7 @@ public class MLCustomModel extends AppCompatActivity {
 
     private void updateButton(final String text, final int buttonSwitch) {
         JSONObject update = new JSONObject();
-        runOnUiThread(() -> {
+        cordovaInterface.getActivity().runOnUiThread(() -> {
             if (buttonSwitch == DOWNLOAD) {
                 try {
                     update.putOpt("text", text);
@@ -214,7 +236,7 @@ public class MLCustomModel extends AppCompatActivity {
                     final MLModelExecutor modelExecutor = MLModelExecutor.getInstance(settings);
                     executorImpl(modelExecutor, bitmap);
                 } catch (MLException e) {
-                    callbackContext.error("" + e.getMessage());
+                    callbackContext.error("modelExecuter :" + e.getMessage());
                 }
                 return null;
             });
@@ -224,15 +246,15 @@ public class MLCustomModel extends AppCompatActivity {
         JSONObject custom = new JSONObject();
         final Bitmap inputBitmap = Bitmap.createScaledBitmap(bitmap, BITMAP_WIDTH, BITMAP_HEIGHT, true);
         int batchNum = 0;
-        final float[][][][] input = new float[1][BITMAP_HEIGHT][BITMAP_WIDTH][3];
+        final byte[][][][] input = new byte[1][BITMAP_HEIGHT][BITMAP_WIDTH][3];
         Log.d(TAG, "interpret pre process");
 
         for (int i = 0; i < BITMAP_WIDTH; i++) {
             for (int j = 0; j < BITMAP_HEIGHT; j++) {
                 int pixel = inputBitmap.getPixel(i, j);
-                input[batchNum][j][i][0] = ((Color.red(pixel) - IMAGE_MEAN)) / IMAGE_STD;
-                input[batchNum][j][i][1] = ((Color.green(pixel) - IMAGE_MEAN)) / IMAGE_STD;
-                input[batchNum][j][i][2] = ((Color.blue(pixel) - IMAGE_MEAN)) / IMAGE_STD;
+                input[batchNum][j][i][0] = (byte) Color.red(pixel);
+                input[batchNum][j][i][1] = (byte) Color.green(pixel);
+                input[batchNum][j][i][2] = (byte) Color.blue(pixel);
             }
         }
         MLModelInputs inputs = null;
@@ -244,9 +266,9 @@ public class MLCustomModel extends AppCompatActivity {
 
         MLModelInputOutputSettings inOutSettings = null;
         try {
-            inOutSettings = new MLModelInputOutputSettings.Factory().setInputFormat(0, MLModelDataType.FLOAT32,
+            inOutSettings = new MLModelInputOutputSettings.Factory().setInputFormat(0, MLModelDataType.BYTE,
                 new int[] {1, 3, BITMAP_HEIGHT, BITMAP_WIDTH})
-                .setOutputFormat(0, MLModelDataType.FLOAT32, new int[] {1, OUTPUT_SIZE})
+                .setOutputFormat(0, MLModelDataType.BYTE, new int[] {1, OUTPUT_SIZE})
                 .create();
         } catch (MLException e) {
             Log.e(TAG, "set input output format failed! " + e.getMessage());
@@ -256,9 +278,14 @@ public class MLCustomModel extends AppCompatActivity {
         this.mlModelExecutor = modelExecutor;
         modelExecutor.exec(inputs, inOutSettings).addOnSuccessListener(mlModelOutputs -> {
             try {
-                float[][] output = mlModelOutputs.getOutput(0); // index
-                float[] probabilities = output[0];
-                prepareResult(probabilities);
+                byte[][] output = mlModelOutputs.getOutput(0);
+                byte[] probabilities = output[0];
+                float[] pro = new float[probabilities.length];
+                for (int i = 0; i < pro.length; i++) {
+                    pro[i] = probabilities[i] / 255f;
+                }
+
+                prepareResult(pro);
 
                 custom.putOpt("result", result);
                 callbackContext.success(custom);
@@ -333,6 +360,7 @@ public class MLCustomModel extends AppCompatActivity {
 
     static class ValueComparator implements Comparator<String>, Serializable {
         private static final long serialVersionUID = 1;
+
         Map<String, Float> base;
 
         ValueComparator(Map<String, Float> base) {

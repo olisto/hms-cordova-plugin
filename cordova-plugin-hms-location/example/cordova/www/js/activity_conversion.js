@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -54,23 +54,36 @@ function addToList() {
     } else {
         currentActivityType = HMSLocation.ActivityType.RUNNING;
     }
-    const item = {conversionType: currentConversionType, activityType: currentActivityType};
+    const item = {
+        conversionType: currentConversionType,
+        activityType: currentActivityType
+    };
     activityConversions.push(item);
     conversionListLog.innerHTML = JSON.stringify(item) + "<br>" + conversionListLog.innerHTML;
 }
 
 async function createActivityConversionUpdates() {
-    const requestCodeValue = document.getElementById("addRequestCode").value;
-    const isSuccess = await activityService.createActivityConversionUpdates(requestCodeValue, activityConversions, (data) => {
-        console.log(JSON.stringify(data));
-    });
-    console.log(isSuccess);
-    activityConversionUpdateRequests.push(requestCodeValue);
-    activityConversions.length = 0;
-    conversionListLog.innerHTML = "";
+    try {
+        const requestCodeValue = document.getElementById("addRequestCode").value;
+        const isSuccess = await activityService.createActivityConversionUpdates(requestCodeValue, activityConversions, (data) => {
+            console.log(JSON.stringify(data));
+        });
+        console.log(isSuccess);
+        activityConversionUpdateRequests.push(requestCodeValue);
+        activityConversions.length = 0;
+        conversionListLog.innerHTML = "";
+
+    } catch (error) {
+        alert(JSON.stringify(error));
+    }
 }
 
 async function deleteActivityConversionUpdates() {
-    const requestCodeValue = document.getElementById("deleteRequestCode").value;
-    await activityService.deleteActivityConversionUpdates(requestCodeValue);
+    try {
+        const requestCodeValue = document.getElementById("deleteRequestCode").value;
+        await activityService.deleteActivityConversionUpdates(requestCodeValue);
+
+    } catch (error) {
+        alert(JSON.stringify(error));
+    }
 }

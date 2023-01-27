@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import java.util.Map;
 import static com.huawei.hms.cordova.push.utils.MapUtils.fromBundle;
 
 public class ArrayUtil {
-
 
     public static Object[] toArray(JSONArray jsonArray) throws JSONException {
         Object[] array = new Object[jsonArray.length()];
@@ -63,6 +62,18 @@ public class ArrayUtil {
             for (int v : (int[]) array) {
                 catalystArray.put(v);
             }
+        } else if (array instanceof byte[]) {
+            for (byte v : (byte[]) array) {
+                catalystArray.put(v);
+            }
+        } else if (array instanceof Short[]) {
+            for (Short v : (Short[]) array) {
+                catalystArray.put(v);
+            }
+        } else if (array instanceof Long[]) {
+            for (Long v : (Long[]) array) {
+                catalystArray.put(v);
+            }
         } else if (array instanceof float[]) {
             for (float v : (float[]) array) {
                 catalystArray.put(v);
@@ -73,6 +84,10 @@ public class ArrayUtil {
             }
         } else if (array instanceof boolean[]) {
             for (boolean v : (boolean[]) array) {
+                catalystArray.put(v);
+            }
+        } else if (array instanceof char[]) {
+            for (char v : (char[]) array) {
                 catalystArray.put(v);
             }
         } else {

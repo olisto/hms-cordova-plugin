@@ -1,5 +1,5 @@
 <!--
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -28,17 +28,12 @@
     <link href="css/index.css" rel="stylesheet">
 </head>
 <body>
-<button class="btn btn-primary btn-lg btn-block mt-3" id="requestLocationPermission"
-        type="button">Request Location Permissions
-</button>
-<button class="btn btn-primary btn-lg btn-block" id="hasLocationPermission" type="button">Has
-    Location Permission
-</button>
 <div class="input-group mt-3">
     <div class="input-group-prepend">
         <span class="input-group-text">Request Code:</span>
     </div>
-    <input aria-describedby="inputGroup-sizing-default" aria-label="Sizing example input" class="form-control"
+    <input aria-describedby="inputGroup-sizing-default" aria-label="Sizing example input"
+           class="form-control"
            id="addRequestCode"
            type="text">
 </div>
@@ -98,7 +93,8 @@
     <div class="input-group-prepend">
         <span class="input-group-text" id="inputGroup-sizing-default">Request Code:</span>
     </div>
-    <input aria-describedby="inputGroup-sizing-default" aria-label="Sizing example input" class="form-control"
+    <input aria-describedby="inputGroup-sizing-default" aria-label="Sizing example input"
+           class="form-control"
            id="removeRequestCode"
            type="text">
 </div>
@@ -112,7 +108,8 @@
     <div class="input-group-prepend">
         <span class="input-group-text">Request Code:</span>
     </div>
-    <input aria-describedby="inputGroup-sizing-default" aria-label="Sizing example input" class="form-control"
+    <input aria-describedby="inputGroup-sizing-default" aria-label="Sizing example input"
+           class="form-control"
            id="addRequestCodeEx"
            type="text">
 </div>
@@ -146,6 +143,31 @@
         <button class="btn btn-primary" id="setMockMode" type="button">Set Mock Mode</button>
     </div>
 </div>
+<div class="container overflow-auto">
+    <label id="setMockModeLog"></label>
+</div>
+
+
+<button class="btn btn-primary btn-lg btn-block" id="enableBackgroundLocation" type="button">Enable
+    Background Location
+</button>
+<div class="container overflow-auto">
+    <label id="enableBackgroundLocationLog"></label>
+</div>
+<button class="btn btn-primary btn-lg btn-block" id="disableBackgroundLocation" type="button">
+    Disable Background Location
+</button>
+<div class="container overflow-auto">
+    <label id="disableBackgroundLocationLog"></label>
+</div>
+<button class="btn btn-primary btn-lg btn-block" id="setLogConfig" type="button">Set Log Config
+</button>
+<button class="btn btn-primary btn-lg btn-block" id="getLogConfig" type="button">Get Log Config
+</button>
+<div class="container overflow-auto">
+    <label id="getLogConfigLog"></label>
+</div>
+
 <script src="cordova.js"></script>
 <script src="js/util.js"></script>
 <script src="js/location.js"></script>

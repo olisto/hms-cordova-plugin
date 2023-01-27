@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -32,72 +32,87 @@ async function onDeviceReady() {
     document.getElementById("flushLocations").onclick = flushLocations;
     document.getElementById("checkLocationSettings").onclick = checkLocationSettings;
     document.getElementById("getNavigationContextState").onclick = getNavigationContextState;
-    document.getElementById("hasLocationPermission").onclick = hasLocationPermission;
     document.getElementById("removeLocationUpdates").onclick = removeLocationUpdates;
     document.getElementById("requestLocationUpdatesEx").onclick = requestLocationUpdatesEx;
     document.getElementById("setMockLocation").onclick = setMockLocation;
     document.getElementById("setMockMode").onclick = setMockMode;
-    document.getElementById("requestLocationPermission").onclick = requestLocationPermission;
-}
-
-async function requestLocationPermission() {
-    const button = document.getElementById("requestLocationPermission");
-    const result = await fusedClient.requestLocationPermission();
-    createPermissionLayout(result, newElement, "Permission is granted.", "Permission is denied.");
-    button.parentNode.insertBefore(newElement, button.nextSibling);
+    document.getElementById("enableBackgroundLocation").onclick = enableBackgroundLocation;
+    document.getElementById("disableBackgroundLocation").onclick = disableBackgroundLocation;
+    document.getElementById("setLogConfig").onclick = setLogConfig;
+    document.getElementById("getLogConfig").onclick = getLogConfig;
 }
 
 async function requestLocationUpdates() {
-    const request = {
-        id: "locationRequest" + Math.random() * 10000,
-        priority: HMSLocation.PriorityConstants.PRIORITY_HIGH_ACCURACY,
-        interval: 1000
+    try {
+        const request = {
+            id: "locationRequest" + Math.random() * 10000,
+            priority: HMSLocation.PriorityConstants.PRIORITY_HIGH_ACCURACY,
+            interval: 1000
+        }
+        const requestCodeValue = document.getElementById("addRequestCode").value;
+        const isSuccess = await fusedClient.requestLocationUpdates(requestCodeValue, request, (locationResult) => {
+            console.log("Background event is called." + JSON.stringify(locationResult));
+            const notification = {
+                contentTitle: "Current Location",
+                category: "service",
+                priority: 4,
+                channelName: "MyChannel",
+                smallIcon: "<set_your_icon_folder_name_in_drawable_folder>",
+                contentText: "Lat: " + locationResult.lastLocation.latitude + " - Lng: " + locationResult.lastLocation.longitude
+            };
+            BackgroundManager.makeToast("Lat: " + locationResult.lastLocation.latitude + " - Lng: " + locationResult.lastLocation.longitude, 1000);
+        });
+        console.log(isSuccess);
+        locationUpdateRequests.push(requestCodeValue);
+    } catch (error) {
+        alert(JSON.stringify(error));
     }
-    const requestCodeValue = document.getElementById("addRequestCode").value;
-    const isSuccess = await fusedClient.requestLocationUpdates(requestCodeValue, request, (locationResult) => {
-        console.log("Background event is called." + JSON.stringify(locationResult));
-        const notification = {
-            contentTitle: "Current Location",
-            category: "service",
-            priority: 4,
-            channelName: "MyChannel",
-            smallIcon: "huawei",
-            contentText: "Lat: " + locationResult.lastLocation.latitude + " - Lng: " + locationResult.lastLocation.longitude
-        };
-        BackgroundManager.makeToast("Lat: " + locationResult.lastLocation.latitude + " - Lng: " + locationResult.lastLocation.longitude, 1000);
-    });
-    console.log(isSuccess);
-    locationUpdateRequests.push(requestCodeValue);
 }
 
 async function getLastLocation() {
-    const log = document.getElementById("getLastLocationLog");
-    const lastLocation = await fusedClient.getLastLocation();
-    log.innerHTML = JSON.stringify(lastLocation);
+    try {
+        const log = document.getElementById("getLastLocationLog");
+        const lastLocation = await fusedClient.getLastLocation();
+        log.innerHTML = JSON.stringify(lastLocation);
+    } catch (error) {
+        alert(JSON.stringify(error));
+    }
 }
 
 async function getLastLocationWithAddress() {
-    const log = document.getElementById("getLastLocationWithAddressLog");
-    const request = {
-        id: "locationRequest" + Math.random() * 10000,
-        priority: HMSLocation.PriorityConstants.PRIORITY_HIGH_ACCURACY,
-        interval: 1000
+    try {
+        const log = document.getElementById("getLastLocationWithAddressLog");
+        const request = {
+            id: "locationRequest" + Math.random() * 10000,
+            priority: HMSLocation.PriorityConstants.PRIORITY_HIGH_ACCURACY,
+            interval: 1000
+        }
+        const getLastLocationWithAddressResult = await fusedClient.getLastLocationWithAddress(request);
+        log.innerHTML = JSON.stringify(getLastLocationWithAddressResult);
+    } catch (error) {
+        alert(JSON.stringify(error));
     }
-    const getLastLocationWithAddressResult = await fusedClient.getLastLocationWithAddress(request);
-    log.innerHTML = JSON.stringify(getLastLocationWithAddressResult);
 }
 
 async function getLocationAvailability() {
-    const log = document.getElementById("getLocationAvailabilityLog");
-    const locationAvailability = await fusedClient.getLocationAvailability();
-    log.innerHTML = JSON.stringify(locationAvailability);
+    try {
+        const log = document.getElementById("getLocationAvailabilityLog");
+        const locationAvailability = await fusedClient.getLocationAvailability();
+        log.innerHTML = JSON.stringify(locationAvailability);
+    } catch (error) {
+        alert(JSON.stringify(error));
+    }
 }
 
 async function flushLocations() {
-    const log = document.getElementById("flushLocationsLog");
-    const flushLocationsResult = await fusedClient.flushLocations();
-    console.log(JSON.stringify(flushLocationsResult));
-    log.innerHTML = "Completed";
+    try {
+        const log = document.getElementById("flushLocationsLog");
+        const flushLocationsResult = await fusedClient.flushLocations();
+        console.log(JSON.stringify(flushLocationsResult));
+        log.innerHTML = "Completed";
+    } catch (error) {
+        alert(JSON.stringify(error));
+    }
 }
 
 async function checkLocationSettings() {
@@ -113,19 +128,17 @@ async function checkLocationSettings() {
         locationRequests: [request]
     });
     log.innerHTML = JSON.stringify(locationSettingsResult);
+
 }
 
 async function getNavigationContextState() {
-    const log = document.getElementById("getNavigationContextStateLog");
-    const getNavigationContextStateResult = await fusedClient.getNavigationContextState(HMSLocation.NavigationRequestConstants.IS_SUPPORT_EX);
-    log.innerHTML = JSON.stringify(getNavigationContextStateResult);
-}
-
-async function hasLocationPermission() {
-    const button = document.getElementById("hasLocationPermission");
-    const isGranted = await fusedClient.hasLocationPermission();
-    createPermissionLayout(isGranted, newElement, "TRUE", "FALSE");
-    button.parentNode.insertBefore(newElement, button.nextSibling);
+    try {
+        const log = document.getElementById("getNavigationContextStateLog");
+        const getNavigationContextStateResult = await fusedClient.getNavigationContextState(HMSLocation.NavigationRequestConstants.IS_SUPPORT_EX);
+        log.innerHTML = JSON.stringify(getNavigationContextStateResult);
+    } catch (error) {
+        alert(JSON.stringify(error));
+    }
 }
 
 async function removeLocationUpdates() {
@@ -138,31 +151,95 @@ async function removeLocationUpdates() {
 }
 
 async function requestLocationUpdatesEx() {
-    const requestCodeValue = document.getElementById("addRequestCodeEx").value;
-    const log = document.getElementById("locationUpdateLogs");
-    const request = {
-        id: "locationRequest" + Math.random() * 10000,
-        priority: HMSLocation.PriorityConstants.PRIORITY_HIGH_ACCURACY,
-        interval: 1000
+    try {
+        const requestCodeValue = document.getElementById("addRequestCodeEx").value;
+        const log = document.getElementById("locationUpdateLogs");
+        const request = {
+            id: "locationRequest" + Math.random() * 10000,
+            priority: HMSLocation.PriorityConstants.PRIORITY_HIGH_ACCURACY,
+            interval: 1000
+        }
+        const isSuccess = await fusedClient.requestLocationUpdatesEx(requestCodeValue, request);
+        console.log(isSuccess);
+        locationUpdateRequests.push(requestCodeValue);
+    } catch (error) {
+        alert(JSON.stringify(error));
     }
-    const isSuccess = await fusedClient.requestLocationUpdatesEx(requestCodeValue, request);
-    console.log(isSuccess);
-    locationUpdateRequests.push(requestCodeValue);
 }
 
 async function setMockLocation() {
-    const latitudeValue = document.getElementById("latitude").value;
-    const longitudeValue = document.getElementById("longitude").value;
-    const log = document.getElementById("setMockLocationLogs");
-    const latLng = {latitude: latitudeValue, longitude: longitudeValue};
-    const setMockLocationResult = await fusedClient.setMockLocation(latLng);
-    console.log("Result: " + setMockLocationResult);
-    log.innerHTML = "Completed.";
+    try {
+        const latitudeValue = document.getElementById("latitude").value;
+        const longitudeValue = document.getElementById("longitude").value;
+        const log = document.getElementById("setMockLocationLog");
+        const latLng = {
+            latitude: latitudeValue,
+            longitude: longitudeValue
+        };
+        const setMockLocationResult = await fusedClient.setMockLocation(latLng);
+        console.log("Result: " + setMockLocationResult);
+        log.innerHTML = "Completed.";
+    } catch (error) {
+        alert(JSON.stringify(error));
+    }
 }
 
 async function setMockMode() {
-    const log = document.getElementById("setMockModeLogs");
-    const setMockModeResult = await fusedClient.setMockMode(true);
-    console.log(setMockLocationResult);
-    log.innerHTML = setMockModeResult;
+    try {
+        const log = document.getElementById("setMockModeLog");
+        const setMockModeResult = await fusedClient.setMockMode(true);
+        console.log(setMockModeResult);
+        log.innerHTML = setMockModeResult;
+    } catch (error) {
+        alert(JSON.stringify(error));
+    }
+}
+
+async function enableBackgroundLocation() {
+    const log = document.getElementById("enableBackgroundLocationLog");
+    try {
+        let notificationId = 1;
+        const notification = {
+            contentTitle: 'Current Location',
+            category: 'service',
+            priority: 2,
+            channelName: 'MyChannel',
+            smallIcon: '<set_your_icon_folder_name_in_drawable_folder>',
+            contentText: "Lat: " + backgroundLocationResult.lastLocation.latitude + " - Lng: " + backgroundLocationResult.lastLocation.longitude
+        };
+        await fusedClient.enableBackgroundLocation(notificationId, notification);
+        log.innerHTML = "enabled";
+    } catch (error) {
+        log.innerHTML = JSON.stringify(error);
+    }
+}
+function disableBackgroundLocation() {
+    const log = document.getElementById("disableBackgroundLocationLog");
+    fusedClient.disableBackgroundLocation();
+    log.innerHTML = "disabled";
+}
+async function setLogConfig() {
+    try {
+        let logConfigSettings = {
+            logConfigSettingsFile: {
+                fileExpiredTime: 4,
+                fileNum: 19,
+                fileSize: 2
+            },
+            logPath: "/storage/emulated/0/log"
+        }
+        await fusedClient.setLogConfig(logConfigSettings);
+        alert("success :: setLogConfig");
+    } catch (error) {
+        alert("error :: setLogConfig : " + JSON.stringify(error));
+    }
+}
+async function getLogConfig() {
+    const log = document.getElementById("getLogConfigLog");
+    try {
+        const getLogConfig = await fusedClient.getLogConfig();
+        log.innerHTML = JSON.stringify(getLogConfig);
+    } catch (error) {
+        log.innerHTML = error;
+    }
 }

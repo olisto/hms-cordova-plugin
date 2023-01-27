@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.huawei.hms.cordova.mlkit;
 
 import android.util.Log;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
 import com.huawei.hms.cordova.mlkit.common.MLHMSAnalyzer;
 import com.huawei.hms.cordova.mlkit.common.MLHMSApplication;
 import com.huawei.hms.cordova.mlkit.common.MLHMSCompositeAnalyzer;
@@ -31,6 +30,8 @@ import com.huawei.hms.cordova.mlkit.providers.custommodel.MLCustomModel;
 import com.huawei.hms.cordova.mlkit.utils.CordovaUtils;
 import com.huawei.hms.cordova.mlkit.utils.PermissionUtils;
 import com.huawei.hms.mlsdk.common.MLApplication;
+
+import com.facebook.drawee.backends.pipeline.Fresco;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -45,19 +46,33 @@ import java.util.List;
 
 public class HMSMLPlugin extends CordovaPlugin {
     private static final String TAG = HMSMLPlugin.class.getSimpleName();
-    List<String> permissionLists = new ArrayList<>();
-    private CordovaInterface cordovaInterface;
-    private PermissionUtils permissionUtils = new PermissionUtils();
-    private CallbackContext callbackContext;
-    private MLCustomModel customModel = new MLCustomModel();
-    private MLHMSLensEngine mlLensEngine;
-    private PluginLayout pluginLayout = new PluginLayout();
-    private MLHMSApplication mlhmsApplication;
-    private MLHMSCompositeAnalyzer compositeAnalyzer;
-    private MLHMSAnalyzer mlhmsAnalyzer;
-    private MLHMSFrame mlhmsFrame;
+
     private static CallbackContext callbackCtx;
+
+    List<String> permissionLists = new ArrayList<>();
+
+    private CordovaInterface cordovaInterface;
+
+    private PermissionUtils permissionUtils = new PermissionUtils();
+
+    private CallbackContext callbackContext;
+
+    private MLHMSLensEngine mlLensEngine;
+
+    private PluginLayout pluginLayout = new PluginLayout();
+
+    private MLHMSApplication mlhmsApplication;
+
+    private MLHMSCompositeAnalyzer compositeAnalyzer;
+
+    private MLHMSAnalyzer mlhmsAnalyzer;
+
+    private MLCustomModel customModel;
+
+    private MLHMSFrame mlhmsFrame;
+
     private boolean isStart = false;
+
     public static CallbackContext getCallbackContext() {
         return callbackCtx;
     }
@@ -83,6 +98,7 @@ public class HMSMLPlugin extends CordovaPlugin {
             this);
         mlhmsAnalyzer = CordovaHelpers.initializeProvider(new MLHMSAnalyzer(cordova.getContext()), cordova, this);
         mlhmsFrame = CordovaHelpers.initializeProvider(new MLHMSFrame(cordova.getContext()), cordova, this);
+        customModel = CordovaHelpers.initializeProvider(new MLCustomModel(cordova.getContext()), cordova, this);
     }
 
     public boolean execute(final String action, final JSONArray args, final CallbackContext callbackContext) {
@@ -186,7 +202,20 @@ public class HMSMLPlugin extends CordovaPlugin {
                             pluginLayout.layoutParams(CordovaHelpers.initialPropsFrom(userProps)), userProps);
                         isStart = true;
                     } catch (JSONException e) {
-                        Log.e(TAG, "" + e.getMessage());
+                        Log.e(TAG, "liveAnalyser" + e.getMessage());
+                    }
+                });
+                return true;
+            }
+            if (action.equals("ACTION_GESTURE_LIVE_ANALYSE")) {
+                HMSLogger.getInstance(cordova.getContext()).startMethodExecutionTimer("GestureliveAnalyse");
+                cordova.getActivity().runOnUiThread(() -> {
+                    try {
+                        mlLensEngine.createLensEngine(params, callbackContext, webView,
+                            pluginLayout.layoutParams(CordovaHelpers.initialPropsFrom(userProps)), userProps);
+                        isStart = true;
+                    } catch (JSONException e) {
+                        Log.e(TAG, " gestureLiveAnalyse" + e.getMessage());
                     }
                 });
                 return true;
@@ -205,7 +234,7 @@ public class HMSMLPlugin extends CordovaPlugin {
                         mlLensEngine.initializeLiveCompositeAnalyzer(params, callbackContext, webView,
                             pluginLayout.layoutParams(CordovaHelpers.initialPropsFrom(userProps)));
                     } catch (JSONException e) {
-                        Log.e(TAG, "" + e.getMessage());
+                        Log.e(TAG, "liveCompositeAnalyse" + e.getMessage());
                     }
                 });
                 return true;
@@ -224,7 +253,7 @@ public class HMSMLPlugin extends CordovaPlugin {
                     try {
                         mlLensEngine.doZoomLensEngine(params, callbackContext);
                     } catch (JSONException e) {
-                        Log.e(TAG, "" + e.getMessage());
+                        Log.e(TAG, "liveDoZoom" + e.getMessage());
                     }
                 });
                 return true;
@@ -235,7 +264,7 @@ public class HMSMLPlugin extends CordovaPlugin {
                     try {
                         mlLensEngine.getDisplayDimension(callbackContext);
                     } catch (JSONException e) {
-                        Log.e(TAG, "" + e.getMessage());
+                        Log.e(TAG, "liveDısplayDimension" + e.getMessage());
                     }
                 });
                 return true;

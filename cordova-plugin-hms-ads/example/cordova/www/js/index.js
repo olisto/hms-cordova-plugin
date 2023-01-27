@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ function onDeviceReady() {
 }
 
 const $ = (id) => document.getElementById(id);
+var sdkConf;
 
 $("getSdkVersion").onclick = async() => {
     const res = await HMSAds.getSDKVersion();
@@ -56,10 +57,13 @@ $("startClient").onclick = async() => {
         .then((result) => alert("referrerClientStartConnection :: " + HMSConstants.InstallReferrerResponses[result]))
         .catch((error) => alert("referrerClientStartConnection :: Error!" + error));
 };
+
 $("getReferrerDetails").onclick = () => {
+    var reqOpt = {
+        installChannel : "test",
+    };
 
-
-    HMSAds.getInstallReferrer()
+    HMSAds.getInstallReferrer(reqOpt)
         .then((result) => alert("getInstallReferrer :: " + JSON.stringify(result)))
         .catch((error) => alert("getInstallReferrer :: Error!" + error));
 
@@ -153,6 +157,10 @@ $("load_splash").onclick = async() => {
         appCountry: "TR",
         appLang: "En",
         countryCode: "TR",
+        location: {
+            lat: 15,
+            lng: 12
+        }
     };
     await splashAd.load({
         adId: "testd7c5cewoj6",
@@ -229,6 +237,9 @@ $("native").onclick = async() => {
     } else if (template === HMSConstants.NativeAdTemplate.NATIVE_AD_VIDEO_TEMPLATE) {
         adId = "testy63txaom86";
         nativeElem.style.height = '300px';
+    } else if(template === HMSConstants.NativeAdTemplate.NATIVE_AD_WITH_APP_DOWNLOAD_BTN_TEMPLATE) {
+        adId = "testy63txaom86";
+        nativeElem.style.height = '300px';
     }
 
     nativeAd = new HMSAds.HMSNativeAd();
@@ -237,6 +248,7 @@ $("native").onclick = async() => {
         template,
         bg: "#E4E4E4",
     });
+
     const nativeAdOptions = { requestCustomDislikeThisAd: true };
 
     nativeAd.on(HMSConstants.NativeAdEvents.NATIVE_AD_LOADED, async() => {
@@ -244,6 +256,8 @@ $("native").onclick = async() => {
         nativeAd.show();
     });
     await nativeAd.loadAd({ adId, nativeAdOptions });
+
+
 };
 
 $("why").onclick = async() => {
@@ -261,3 +275,82 @@ $("dislike").onclick = async() => {
     const res = await nativeAd.dislikeAd("Do not like this ad!");
     alert("dislikeAd :: success! " + JSON.stringify(res));
 };
+
+//VAST
+var vast;
+
+$("vast").onclick = async() => {
+    if (vast) await vast.release();
+    vast = new HMSAds.HMSVast();
+    await vast.create("vast-element");
+    vast.on(HMSConstants.VastEvents.VAST_LOAD_SUCCESS, async() => {
+        console.log("vast loaded");
+    });
+
+    vast.on(HMSConstants.VastEvents.VAST_LOAD_FAILED, async() => {
+        console.log("vast failed");
+    });
+
+    var adParam = {
+        adId: "testy3cglm3pj0",
+        totalDuration: 99,
+        creativeMatchStrategy: HMSConstants.CreativeMatchType.ANY,
+        isAllowMobileTraffic: false,
+        adOrientation: HMSConstants.MediaDirection.LANDSCAPE,
+        maxAdPods: 1,
+        requestOption: {
+            adContentClassification: HMSConstants.AdContentClassification.AD_CONTENT_CLASSIFICATION_A,
+            appCountry: "TR",
+            appLang: "En",
+            requestLocation: true,
+            nonPersonalizedAd: HMSConstants.NonPersonalizedAd.PERSONALIZED,
+            tagForChildProtection: HMSConstants.ChildProtection.TAG_FOR_CHILD_PROTECTION_UNSPECIFIED,
+            tagForUnderAgeOfPromise: HMSConstants.UnderAgeOfPromise.PROMISE_UNSPECIFIED,
+        }    
+    };
+
+    var playerConfig = {
+        enableRotation: false,
+        isEnableCutout: false,
+        skipLinearAd: false,
+        isEnablePortrait: true
+    };
+    await vast.loadAd({
+        adParam: adParam,
+        playerConfig: playerConfig,
+        isTestAd: false ,
+        isAdLoadWithAdsData: true,
+        isCustomVideoPlayer: false
+
+    });
+};
+
+$("init_vast").onclick = async() => {
+    HMSAds.initVast(sdkConf)
+        .then((result) => alert("initVast :: " + JSON.stringify(result)))
+        .catch((error) => alert("initVast :: Error!" + error));
+}
+
+$("get_vast_sdk_configuration").onclick = async() => {
+    sdkConf = HMSAds.getVastSdkConfiguration()
+        .then((result) => alert("getVastSdkConfiguration :: " + JSON.stringify(result)))
+        .catch((error) => alert("getVastSdkConfiguration :: Error!" + error));
+}
+
+$("update_sdk_server_config").onclick = async() => {
+    HMSAds.updateSdkServerConfig("testy3cglm3pj0")
+        .then((result) => alert("updateSdkServerConfig :: " + JSON.stringify(result)))
+        .catch((error) => alert("updateSdkServerConfig :: Error!" + error));
+}
+
+$("user_accept_ad_license").onclick = async() => {
+    HMSAds.userAcceptAdLicense(true)
+        .then((result) => alert("userAcceptAdLicense :: " + JSON.stringify(result)))
+        .catch((error) => alert("userAcceptAdLicense :: Error!" + error));
+}
+
+$("get_event_processor").onclick = async() => {
+    HMSAds.getEventProcessor()
+        .then((result) => alert("getEventProcessor :: " + JSON.stringify(result)))
+        .catch((error) => alert("getEventProcessor :: Error!" + error));
+}

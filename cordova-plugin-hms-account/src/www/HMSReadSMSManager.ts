@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -16,11 +16,15 @@
 
 import { asyncExec } from './utils'
 
-export function smsVerificationCode(): Promise<String> {
-  return asyncExec('HMSReadSMSManager', 'smsVerificationCode', []);
+export function smsVerificationCode(): Promise<string> {
+  return asyncExec('HMSAccount', 'HMSReadSMSManager', ['smsVerificationCode']);
 }
 
-export function obtainHashCode(): Promise<String> {
-  return asyncExec('HMSReadSMSManager', 'obtainHashCode', []);
+export function startConsent(phoneNumber: string): Promise<string> {
+  return asyncExec('HMSAccount', 'HMSReadSMSManager', ['startConsent',phoneNumber]);
+}
+
+export function obtainHashCode(): Promise<string> {
+  return asyncExec('HMSAccount', 'HMSReadSMSManager', ['obtainHashCode']);
 }
 

@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -21,6 +21,16 @@ function onDeviceReady() {
     console.log("onDeviceReady");
 }
 
+/**
+ * getInstance
+ */
+$("getInstance").onclick = async() => {
+    HMSAnalytics.getInstance("DE")
+        .then(() => {
+            alert("getInstance :: Success");
+        })
+        .catch((error) => alert("getInstance :: Error! " + JSON.stringify(error,null,1)));
+};
 
 /**
  * Specifies whether to enable event collection.
@@ -147,7 +157,20 @@ $("onEvent").onclick = async() => {
         "putLong": 2121455345345343,
         "putString": "string",
         "putBoolean1": true,
-        "putBoolean2": false
+        "putBoolean2": false,
+        "items": [{
+            "itemsPutInt0": 1523,
+            "itemsPutDouble0": 12.0565600002346789,
+            "itemsPutLong0": 2333333345345343,
+            "itemsPutString0": "string0",
+            "itemsPutBoolean0": true
+        },{
+            "itemsPutInt1": 321,
+            "itemsPutDouble1": 12.056565665612222222,
+            "itemsPutLong1": 1111451115345343,
+            "itemsPutString1": "string1",
+            "itemsPutBoolean1": false
+        }]
     };
     HMSAnalytics.onEvent(name, params)
         .then(() => {
@@ -337,6 +360,35 @@ $("isRestrictionEnabled").onclick = async() => {
             alert("isRestrictionEnabled :: Success -> isRestrictionEnabled: " + JSON.stringify(result,null,1));
         })
         .catch((error) => alert("isRestrictionEnabled :: Error! " + JSON.stringify(error,null,1)));
+};
+
+/**
+ * Sets whether to collect advertising identifiers.
+ */
+$("setCollectAdsIdEnabled").onclick = async() => {
+    const collect_ads_id_enabled = $("collect_ads_id_enabled").value;
+    const isEnabled = (collect_ads_id_enabled === "true");
+    HMSAnalytics.setCollectAdsIdEnabled(isEnabled)
+        .then(() => {
+            alert("setCollectAdsIdEnabled :: Success");
+        })
+        .catch((error) => alert("setCollectAdsIdEnabled :: Error! " + JSON.stringify(error,null,1)));
+};
+
+/**
+ * Adds default event parameters.
+ * These parameters will be added to all events except the automatically collected events.
+ */
+$("addDefaultEventParams").onclick = async() => {
+    const params = {};
+    params["DefaultEventKey0"] = false;
+    params["DefaultEventKey1"] = 1;
+    params["DefaultEventKey2"] = "two";
+    HMSAnalytics.addDefaultEventParams(params)
+        .then(() => {
+            alert("addDefaultEventParams :: Success");
+        })
+        .catch((error) => alert("addDefaultEventParams :: Error! " + JSON.stringify(error,null,1)));
 };
 
 /**

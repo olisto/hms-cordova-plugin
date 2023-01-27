@@ -1,10 +1,10 @@
 {
     "name": "cordova-hms-account-demo",
     "displayName": "HMSAccountDemo",
-    "version": "5.0.3-303",
+    "version": "6.4.0-301",
     "description": "A demo application which shows the usage of HMS Account Plugin",
     "license": "Apache-2.0",
-    "licenseFilename": "LICENCE",
+    "licenseFilename": "LICENSE",
     "readmeFilename": "README.md",
     "main": "index.js",
     "keywords": [
@@ -27,7 +27,7 @@
         "./.docs",
         "./www",
         "config.xml",
-        "LICENCE",
+        "LICENSE",
         "package.json",
         "README.md"
     ]

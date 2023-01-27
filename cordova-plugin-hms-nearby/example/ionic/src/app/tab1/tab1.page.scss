@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -14,22 +14,22 @@
     limitations under the License.
 */
 ion-item {
-    ion-avatar {
-        margin: 0;
-    }
-    ion-label {
-        margin: 0;
-    }
+  ion-avatar {
+    margin: 0;
+  }
+  ion-label {
+    margin: 0;
+  }
 }
 
 .text-pane {
-    background-color: whitesmoke;
-    margin: 10px;
-    min-height: 300px;
-    height: 300px;
-    overflow: scroll;
+  background-color: whitesmoke;
+  margin: 10px;
+  min-height: 300px;
+  height: 300px;
+  overflow: scroll;
 
-    ion-item{
-        --ion-background-color:transparent;
-     }
+  ion-item {
+    --ion-background-color: transparent;
+  }
 }

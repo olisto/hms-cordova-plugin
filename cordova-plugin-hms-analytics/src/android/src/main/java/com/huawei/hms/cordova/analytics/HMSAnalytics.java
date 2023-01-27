@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -27,16 +27,17 @@ import org.json.JSONArray;
 import java.util.Arrays;
 
 public class HMSAnalytics extends CordovaPlugin {
-    private static final String TAG = HMSAnalytics.class.getSimpleName();
     private static final String KIT = "Analytics";
-    private static final String VERSION = "5.1.0.301";
+
+    private static final String VERSION = "6.4.1.302";
+
     private CordovaController cordovaController;
 
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
         cordovaController = new CordovaController(this, KIT, VERSION,
-                Arrays.asList(new HMSAnalyticsModule(cordova.getContext())));
+            Arrays.asList(new HMSAnalyticsModule(cordova.getContext())));
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
-    Copyright 2020-2021. Huawei Technologies Co., Ltd. All rights reserved.
+    Copyright 2020-2022. Huawei Technologies Co., Ltd. All rights reserved.
 
     Licensed under the Apache License, Version 2.0 (the "License")
     you may not use this file except in compliance with the License.
@@ -26,13 +26,14 @@ import com.huawei.hms.cordova.mlkit.helpers.CordovaHelpers;
 import com.huawei.hms.cordova.mlkit.interfaces.HMSProvider;
 import com.huawei.hms.cordova.mlkit.logger.HMSLogger;
 import com.huawei.hms.cordova.mlkit.logger.HMSMethod;
-import com.huawei.hms.mlplugin.card.bcr.MLBcrCaptureResult;
-import com.huawei.hms.mlplugin.card.bcr.MLBcrCapture;
-import com.huawei.hms.mlplugin.card.bcr.MLBcrCaptureConfig;
 import com.huawei.hms.cordova.mlkit.utils.HMSMLUtils;
 import com.huawei.hms.cordova.mlkit.utils.PlatformUtils;
 import com.huawei.hms.cordova.mlkit.utils.TextUtils;
+import com.huawei.hms.mlplugin.card.bcr.CustomView;
+import com.huawei.hms.mlplugin.card.bcr.MLBcrCapture;
+import com.huawei.hms.mlplugin.card.bcr.MLBcrCaptureConfig;
 import com.huawei.hms.mlplugin.card.bcr.MLBcrCaptureFactory;
+import com.huawei.hms.mlplugin.card.bcr.MLBcrCaptureResult;
 import com.huawei.hms.mlsdk.card.MLBcrAnalyzerFactory;
 import com.huawei.hms.mlsdk.card.bcr.MLBankCard;
 import com.huawei.hms.mlsdk.card.bcr.MLBcrAnalyzer;
@@ -46,11 +47,43 @@ import org.json.JSONObject;
 
 public class MLBankCardAnalyser extends HMSProvider {
     private static final String TAG = MLBankCardAnalyser.class.getName();
+
     private MLBcrAnalyzer sdkAnalyzer;
+
     private CallbackContext callbackContext;
+
+    CustomView.OnBcrResultCallback onBcrResultCallback = new CustomView.OnBcrResultCallback() {
+        @Override
+        public void onBcrResult(MLBcrCaptureResult idCardResult) {
+
+            Log.i(TAG, "onBcrResultCallback onBcrResult");
+            if (idCardResult.getErrorCode() == 0) {
+                try {
+                    JSONObject icrResult = new JSONObject();
+                    Bitmap bitmap = idCardResult.getOriginalBitmap();
+                    icrResult.putOpt("bitmap", bitmap);
+                    icrResult.putOpt("number", idCardResult.getNumber());
+                    callbackContext.success(icrResult);
+                    HMSLogger.getInstance(getContext()).sendSingleEvent("mlBCRPluginDetector");
+
+                } catch (JSONException e) {
+                    Log.e(TAG, "MLBcrCapture.Callback: error ->" + e.getMessage());
+                }
+            } else {
+                Log.i(TAG, "onBcrResultCallback onBcrResult idCardResult is null");
+                callbackContext.error("idCardResult is null");
+            }
+
+        }
+    };
+
     private int detectType;
+
     private MLBcrAnalyzerSetting mlBcrAnalyzerSetting;
+
     private MLBcrCaptureConfig config;
+
+    private CustomView.Builder builder = null;
 
     private MLBcrCapture.Callback banCallback = new MLBcrCapture.Callback() {
         @Override
@@ -136,6 +169,7 @@ public class MLBankCardAnalyser extends HMSProvider {
         task.addOnSuccessListener(
             PlatformUtils.successListener(method, getActivity(), callbackContext, TextUtils.FROM_BCR_TO_JSON_OBJECT))
             .addOnFailureListener(PlatformUtils.failureListener(method, getActivity(), callbackContext));
+
     }
 
     public void startCaptureActivity(final JSONObject params, final MLBcrCapture.Callback Callback) {
@@ -155,6 +189,7 @@ public class MLBankCardAnalyser extends HMSProvider {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.putOpt("number", bankCardResult.getNumber());
+            jsonObject.putOpt("errorCode", bankCardResult.getErrorCode());
             Bitmap originalBitmap = bankCardResult.getOriginalBitmap();
             Bitmap numberBitmap = bankCardResult.getNumberBitmap();
             jsonObject.putOpt("expire", bankCardResult.getExpire());
@@ -198,6 +233,39 @@ public class MLBankCardAnalyser extends HMSProvider {
             callbackContext.success("Analyser stopped");
             HMSLogger.getInstance(cordovaInterface.getContext()).sendSingleEvent("bankCardDetectorStop");
         }
+    }
+
+    public void setOnBcrResultCallback(final CallbackContext context) throws JSONException {
+        this.builder = new CustomView.Builder().setOnBcrResultCallback(onBcrResultCallback);
+        HMSLogger.getInstance(getContext()).sendSingleEvent("setOnBcrResultCallback");
+        context.success(builder.toString());
+    }
+
+    public void setRecMode(final CallbackContext context, JSONObject params) throws JSONException {
+        if (params != null) {
+            int recMode = params.getInt("recMode");
+            this.builder = new CustomView.Builder().setRecMode(recMode);
+            HMSLogger.getInstance(getContext()).sendSingleEvent("setRecMode");
+            context.success(builder.toString());
+        } else {
+            HMSLogger.getInstance(getContext()).sendSingleEvent("setRecMode failure");
+            context.error(CordovaErrors.ANALYSIS_FAILURE);
+        }
+
+    }
+
+    public void setResultType(final CallbackContext context, JSONObject params) throws JSONException {
+        if (params != null) {
+            int resultType = params.getInt("resultType");
+            this.builder = new CustomView.Builder().setResultType(resultType);
+
+            HMSLogger.getInstance(getContext()).sendSingleEvent("resultType");
+            context.success(builder.toString());
+        } else {
+            HMSLogger.getInstance(getContext()).sendSingleEvent("resultType failure");
+            context.error(CordovaErrors.ANALYSIS_FAILURE);
+        }
+
     }
 
     public void getBCRSetting(final CallbackContext callbackContext) throws JSONException {
